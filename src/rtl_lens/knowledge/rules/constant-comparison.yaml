@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: constant-comparison
+severity: warning
+en:
+  title: Comparison has a constant result
+  cause: The operand widths, signedness, or declared ranges make the comparison always true or always false for every representable value.
+  risk: Unreachable branches and silently disabled checks can conceal a mistaken limit, truncation, or signedness assumption.
+  fix: Correct the operand widths, signs, and bounds so the intended comparison is reachable, or remove the redundant condition.
+zh-CN:
+  title: 比较表达式的结果恒定
+  cause: 操作数的位宽、符号属性或声明范围使比较对所有可表示的值都恒真或恒假。
+  risk: 不可达分支和失效的检查会掩盖错误的阈值、截断或符号属性假设。
+  fix: 修正操作数位宽、符号和边界，使预期比较确实可达；若条件本就多余则将其删除。
+failing_example: failing/constant-comparison.sv
+fixed_example: fixed/constant-comparison.sv
+references: [https://verilator.org/guide/latest/warnings.html#cmpconst]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: CMPCONST
+    verification: container

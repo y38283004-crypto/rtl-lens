@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: case-overlap
+severity: warning
+en:
+  title: Case patterns overlap
+  cause: Two wildcard case items can match the same selector value.
+  risk: Priority depends on source order and can hide an unintended condition or synthesis mismatch.
+  fix: Rewrite masks so every value matches one item, or express intentional priority with an explicit if chain.
+zh-CN:
+  title: case 匹配模式发生重叠
+  cause: 两个带通配符的 case 分支可能同时匹配同一个选择值。
+  risk: 结果会依赖源码顺序，可能掩盖错误条件或造成综合行为差异。
+  fix: 调整掩码使每个取值只匹配一个分支；若确实需要优先级，请改用明确的 if 链。
+failing_example: failing/case-overlap.sv
+fixed_example: fixed/case-overlap.sv
+references: [https://verilator.org/guide/latest/warnings.html#caseoverlap]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: CASEOVERLAP
+    verification: container

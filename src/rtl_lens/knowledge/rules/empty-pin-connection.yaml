@@ -1,0 +1,32 @@
+schema_version: "1.0"
+rule_id: empty-pin-connection
+severity: info
+en:
+  title: Named port connection is explicitly empty
+  cause: A module instance names an input, output, or inout port but leaves the associated connection expression empty.
+  risk: An empty input or bidirectional connection can leave required behavior undefined, while unexplained open outputs make intent difficult to review.
+  fix: Connect required inputs and inouts; connect outputs when used, and clearly document any output that is intentionally left open.
+zh-CN:
+  title: 命名端口连接被显式留空
+  cause: 模块实例写出了 input、output 或 inout 端口名称，却把对应的连接表达式留空。
+  risk: 空输入或双向连接可能使必需行为未定义，而未说明的空输出也会让设计意图难以审查。
+  fix: 连接必需的输入和双向端口；需要输出时进行连接，并明确说明任何有意悬空的输出。
+failing_example: failing/empty-pin-connection.sv
+fixed_example: fixed/empty-pin-connection.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#pinconnectempty
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L576-L578
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: empty-inout-connection
+    verification: local
+  - engine: pyslang
+    code: empty-input-connection
+    verification: local
+  - engine: pyslang
+    code: empty-output-connection
+    verification: local
+  - engine: verilator
+    code: PINCONNECTEMPTY
+    verification: container

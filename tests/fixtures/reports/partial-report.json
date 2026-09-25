@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "project_root": "demo/<project data-x=\"unsafe\">&lt;entity&gt;/芯片",
+    "started_at": "2026-08-17T00:00:00Z",
+    "duration_ms": 31,
+    "requested_engines": ["pyslang", "verilator"],
+    "completed_engines": ["pyslang"],
+    "config_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "redacted": false,
+    "scan_state": "partial",
+    "source_count": 3
+  },
+  "findings": [
+    {
+      "fingerprint": "1111111111111111111111111111111111111111111111111111111111111111",
+      "canonical_rule": "width-mismatch",
+      "severity": "error",
+      "location": {
+        "path": "rtl/<top onmouseover=\"window.__pathOwned=1\">&lt;entity&gt;.sv",
+        "line": 3,
+        "column": 9
+      },
+      "title": "Assignment <strong>width</strong> mismatch",
+      "message": "</script><script id=\"owned\">window.__owned=1</script> &lt;em&gt;",
+      "symbol": "top\" autofocus onfocus=\"window.__attrOwned=1",
+      "source_snippet": "<always_comb> a = b & c; </always_comb>",
+      "explanation_id": "width-mismatch",
+      "baseline_state": "new",
+      "provenance": [
+        {
+          "engine": "pyslang",
+          "engine_version": "11.0<script id=\"version-owned\"></script>",
+          "original_code": "constant-<conversion>",
+          "severity": "error",
+          "location": {
+            "path": "rtl/<top onmouseover=\"window.__rawPathOwned=1\">.sv",
+            "line": 3,
+            "column": 9
+          },
+          "message": "implicit <conversion> & entity",
+          "source_snippet": "<assign>out = in;</assign>"
+        },
+        {
+          "engine": "verilator",
+          "engine_version": "5.040",
+          "original_code": "WIDTHTRUNC",
+          "severity": "warning",
+          "location": {"path": "rtl/top.sv", "line": 3, "column": 9},
+          "message": "width warning"
+        },
+        {
+          "engine": "x\ry",
+          "original_code": "CR-NAME",
+          "severity": "error",
+          "location": {"path": "rtl/top.sv", "line": 3, "column": 9},
+          "message": "carriage-return engine name"
+        }
+      ]
+    },
+    {
+      "fingerprint": "2222222222222222222222222222222222222222222222222222222222222222",
+      "canonical_rule": "unknown:pyslang:MYSTERY",
+      "severity": "warning",
+      "location": {"path": "rtl/未知<&>.sv", "line": 7, "column": 2},
+      "title": "Unknown <em>diagnostic</em>",
+      "message": "raw &lt;tag&gt; and <valid-looking>tag</valid-looking>",
+      "explanation_id": null,
+      "baseline_state": "existing",
+      "provenance": [
+        {
+          "engine": "all",
+          "original_code": "MYSTERY<img src=x onerror=window.__rawOwned=1>",
+          "severity": "warning",
+          "location": {"path": "rtl/未知<&>.sv", "line": 7, "column": 2},
+          "message": "raw <b>message</b> is preserved"
+        },
+        {
+          "engine": "nul\u0000engine",
+          "original_code": "NUL-NAME",
+          "severity": "warning",
+          "location": {"path": "rtl/未知<&>.sv", "line": 7, "column": 2},
+          "message": "null engine name"
+        }
+      ]
+    },
+    {
+      "fingerprint": "3333333333333333333333333333333333333333333333333333333333333333",
+      "canonical_rule": "style-note",
+      "severity": "info",
+      "location": {"path": "rtl/helper.sv", "line": 11, "column": 1},
+      "title": "Informational note",
+      "message": "No blocking issue",
+      "explanation_id": "style-note",
+      "baseline_state": "new",
+      "provenance": [
+        {
+          "engine": "hostile\"/><script id=\"engine-owned\">window.__engineOwned=1</script>",
+          "original_code": "STYLE",
+          "severity": "info",
+          "location": {"path": "rtl/helper.sv", "line": 11, "column": 1},
+          "message": "informational detail"
+        }
+      ]
+    }
+  ],
+  "engine_runs": [
+    {
+      "engine": "pyslang",
+      "state": "completed",
+      "version": "11.0",
+      "duration_ms": 26
+    },
+    {
+      "engine": "verilator",
+      "state": "failed",
+      "version": "5.040<svg onload=window.__engineVersionOwned=1>",
+      "failure": {
+        "kind": "runtime<img src=x onerror=window.__kindOwned=1>",
+        "message": "verilator </script><script id=\"failure-owned\">window.__failureOwned=1</script>",
+        "required": false
+      },
+      "duration_ms": 5
+    }
+  ],
+  "resolved_fingerprints": [
+    "4444444444444444444444444444444444444444444444444444444444444444"
+  ]
+}

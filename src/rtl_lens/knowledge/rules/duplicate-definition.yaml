@@ -1,0 +1,26 @@
+schema_version: "1.0"
+rule_id: duplicate-definition
+severity: error
+en:
+  title: Design unit is defined more than once
+  cause: Two modules, interfaces, packages, or other design units introduce the same name into the same compilation scope.
+  risk: Elaboration becomes ambiguous or fails, and tool-dependent file ordering can select an unintended definition.
+  fix: Keep one authoritative definition or rename genuinely distinct units and update every reference consistently.
+zh-CN:
+  title: 设计单元被重复定义
+  cause: 两个 module、interface、package 或其他设计单元在同一编译作用域中引入了相同名称。
+  risk: 设计展开会产生歧义或失败，依赖文件顺序的工具还可能选择错误定义。
+  fix: 只保留一个权威定义；若确实是不同单元则重命名，并一致更新所有引用。
+failing_example: failing/duplicate-definition.sv
+fixed_example: fixed/duplicate-definition.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#moddup
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L1031
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: duplicate-definition
+    verification: local
+  - engine: verilator
+    code: MODDUP
+    verification: container

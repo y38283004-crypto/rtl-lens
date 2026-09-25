@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: implicit-net
+severity: warning
+en:
+  title: Undeclared identifier creates an implicit net
+  cause: A signal name is used in a net context without a declaration, so permissive Verilog rules silently create a one-bit wire.
+  risk: A typo or missing declaration can compile as the wrong one-bit connection, hiding width loss and disconnected logic.
+  fix: Declare every signal explicitly and enable default_nettype none around project RTL to turn accidental implicit nets into errors.
+zh-CN:
+  title: 未声明标识符创建了隐式网络
+  cause: 信号名在网络上下文中使用却没有声明，宽松的 Verilog 规则因此静默创建一位 wire。
+  risk: 拼写错误或遗漏声明可能以错误的一位连接通过编译，从而掩盖位宽丢失和逻辑断连。
+  fix: 显式声明所有信号，并在项目 RTL 中启用 default_nettype none，使意外隐式网络直接报错。
+failing_example: failing/implicit-net.sv
+fixed_example: fixed/implicit-net.sv
+references: [https://verilator.org/guide/latest/warnings.html#implicit]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: IMPLICIT
+    verification: container

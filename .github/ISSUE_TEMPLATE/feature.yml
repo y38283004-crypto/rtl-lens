@@ -1,0 +1,51 @@
+name: Feature or rule request
+description: Propose a focused capability or evidence-backed diagnostic rule.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security vulnerabilities or conduct concerns here. Use GitHub Security → Advisories → Report a vulnerability.
+        Remove secrets, tokens, credentials, private source, customer data, and IP addresses from every field and attachment.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the workflow or analysis problem, not just a preferred implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: desired_result
+    attributes:
+      label: Desired result
+      description: Explain the observable result and who benefits.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds, related tools, or reasons alternatives are insufficient.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or source for a diagnostic rule
+      description: For a rule request, include engine output, language references, or upstream documentation. Sanitize all examples, logs, and IP addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: contribute
+    attributes:
+      label: Willingness to contribute
+      description: Say whether you can help with a minimal sanitized RTL fixture, documentation, translation, or implementation.
+    validations:
+      required: true
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true

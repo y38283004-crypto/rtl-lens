@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: multiple-drivers
+severity: error
+en:
+  title: Signal has multiple procedural drivers
+  cause: One variable is assigned by more than one procedural process or by incompatible procedural and continuous owners.
+  risk: Competing owners can create clock-domain crossings, race-dependent simulation, or hardware that does not match the intended priority.
+  fix: Give the variable one owner, consolidate its updates into one process, and synchronize data before it crosses clock domains.
+zh-CN:
+  title: 同一信号存在多个过程驱动源
+  cause: 同一个变量由多个过程块赋值，或同时存在互不兼容的过程驱动与连续驱动。
+  risk: 多个驱动源可能造成跨时钟域问题、依赖执行顺序的竞争，或使实现结果偏离预期优先级。
+  fix: 让变量只由一个明确过程驱动，将更新合并到同一过程，并在跨时钟域前对数据进行同步。
+failing_example: failing/multiple-drivers.sv
+fixed_example: fixed/multiple-drivers.sv
+references: [https://verilator.org/guide/latest/warnings.html#multidriven]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: MULTIDRIVEN
+    verification: container

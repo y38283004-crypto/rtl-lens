@@ -1,0 +1,19 @@
+schema_version: "1.0"
+rule_id: unsupported-construct
+severity: error
+en:
+  title: Selected tool does not support the HDL construct
+  cause: The source uses a legal language feature that is outside the implemented feature set of the selected simulator, linter, or synthesis tool version.
+  risk: Analysis or synthesis stops before producing trustworthy results, and replacing the construct blindly can change design behavior.
+  fix: Use a supported equivalent with verified semantics or select and pin a tool version that explicitly supports the required feature.
+zh-CN:
+  title: 所选工具不支持该 HDL 结构
+  cause: 源码使用了语言允许的特性，但所选仿真、检查或综合工具版本尚未实现该特性。
+  risk: 分析或综合会在产生可信结果前停止，而盲目替换结构还可能改变设计行为。
+  fix: 使用语义经过验证的受支持等价写法，或选择并固定明确支持所需特性的工具版本。
+failing_example: failing/unsupported-construct.sv
+fixed_example: fixed/unsupported-construct.sv
+references: [https://verilator.org/guide/latest/warnings.html#unsupported]
+review_status: reviewed
+engine_mappings: []
+mapping_note: Verilator UNSUPPORTED is documented but remains inactive until the pinned container fixture emits that exact code.

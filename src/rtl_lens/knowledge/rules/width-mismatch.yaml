@@ -1,0 +1,36 @@
+schema_version: "1.0"
+rule_id: width-mismatch
+severity: error
+en:
+  title: Assignment width mismatch
+  cause: The source and destination widths differ, so the assignment extends or truncates bits.
+  risk: Silent truncation can change numeric results without stopping synthesis or simulation.
+  fix: Make both widths agree, or use an explicit slice or cast to document intentional conversion.
+zh-CN:
+  title: 赋值两侧位宽不一致
+  cause: 源信号与目标信号位宽不同，赋值时会发生扩展或截断。
+  risk: 静默截断可能改变数值结果，但综合或仿真不一定停止。
+  fix: 统一两侧位宽；若转换是有意的，请使用明确的位选或类型转换。
+failing_example: failing/width-mismatch.sv
+fixed_example: fixed/width-mismatch.sv
+references: [https://verilator.org/guide/latest/warnings.html#width]
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: constant-conversion
+    verification: local
+  - engine: pyslang
+    code: width-expand
+    verification: local
+  - engine: pyslang
+    code: width-trunc
+    verification: local
+  - engine: verilator
+    code: WIDTH
+    verification: container
+  - engine: verilator
+    code: WIDTHEXPAND
+    verification: container
+  - engine: verilator
+    code: WIDTHTRUNC
+    verification: container

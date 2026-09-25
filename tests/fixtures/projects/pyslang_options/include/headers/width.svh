@@ -1,0 +1,1 @@
+`define RTL_LENS_WIDTH 8

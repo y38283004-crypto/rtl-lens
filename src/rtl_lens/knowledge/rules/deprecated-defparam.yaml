@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: deprecated-defparam
+severity: warning
+en:
+  title: Parameter is overridden with defparam
+  cause: A hierarchical defparam statement reaches into an instance after declaration to change one of its parameters.
+  risk: Hierarchical overrides are fragile under refactoring, obscure configuration at the instance site, and are deprecated by modern tool flows.
+  fix: Pass the parameter explicitly with a parameter value assignment on the module instantiation.
+zh-CN:
+  title: 使用 defparam 覆盖参数
+  cause: 层次化 defparam 语句在实例声明后深入层次结构并修改其中的参数。
+  risk: 层次化覆盖在重构时非常脆弱，会隐藏实例位置的配置，而且已被现代工具流程弃用。
+  fix: 在模块例化处使用参数值赋值语法显式传递参数。
+failing_example: failing/deprecated-defparam.sv
+fixed_example: fixed/deprecated-defparam.sv
+references: [https://verilator.org/guide/latest/warnings.html#defparam]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: DEFPARAM
+    verification: container

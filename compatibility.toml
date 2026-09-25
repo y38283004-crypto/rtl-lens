@@ -1,0 +1,163 @@
+# Source-only, pinned file subsets. See docs/beta/compatibility.md for limitations.
+# Attribution and upstream notices are retained in each temporary staged scan.
+schema_version = 1
+
+[[projects]]
+id = "picorv32"
+repository = "https://github.com/YosysHQ/picorv32"
+commit = "ef203c2b0a3fb793280f5114941416c425c5b461"
+license = "ISC"
+license_file = "COPYING"
+license_sha256 = "041ebc727233e5bf096dd41260cbb81014d3d29ca007a15f3b1807d4e9ff288e"
+attribution = "Claire Xenia Wolf and PicoRV32 contributors"
+scope = "Standalone picorv32 processor module in picorv32.v; excludes other tops, benches, firmware and integration examples."
+files = ["picorv32.v"]
+top_files = ["picorv32.v"]
+include_dirs = []
+defines = []
+top_modules = ["picorv32"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "verilog-uart"
+repository = "https://github.com/alexforencich/verilog-uart"
+commit = "1b867e53af738e4a8bc7c839ca2f1c07f40382dc"
+license = "MIT"
+license_file = "COPYING"
+license_sha256 = "e976f1560229f2e4259c993745637435e2d8f969c91bf73651443aea4438d142"
+attribution = "Alex Forencich and verilog-uart contributors"
+scope = "AXI4-Stream UART wrapper and receive/transmit RTL only; excludes benches, synthesis examples and integration collateral."
+files = ["rtl/uart.v", "rtl/uart_rx.v", "rtl/uart_tx.v"]
+top_files = ["rtl/uart.v"]
+include_dirs = []
+defines = []
+top_modules = ["uart"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "verilog-i2c"
+repository = "https://github.com/alexforencich/verilog-i2c"
+commit = "a65be4045e898a52e791c6ee71f8f79a7cd2e129"
+license = "MIT"
+license_file = "COPYING"
+license_sha256 = "9a3d2d9df500459598f939d20f659191c73881eb8d88fd24d0f81a12438320ea"
+attribution = "Alex Forencich and verilog-i2c contributors"
+scope = "Standalone generic I2C master RTL only; excludes AXI/Wishbone wrappers, benches and examples."
+files = ["rtl/i2c_master.v"]
+top_files = ["rtl/i2c_master.v"]
+include_dirs = []
+defines = []
+top_modules = ["i2c_master"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "verilog-axis"
+repository = "https://github.com/alexforencich/verilog-axis"
+commit = "48ff7a7e2ef782cf778d47910cf85835c64b1bce"
+license = "MIT"
+license_file = "COPYING"
+license_sha256 = "8ea57f95365e9b16a5b516f422b71269183a1ae53bab5878ae6d69039e58fe77"
+attribution = "Alex Forencich and verilog-axis contributors"
+scope = "Standalone AXI-stream FIFO RTL only; excludes other components, benches, synthesis examples and generated wrappers."
+files = ["rtl/axis_fifo.v"]
+top_files = ["rtl/axis_fifo.v"]
+include_dirs = []
+defines = []
+top_modules = ["axis_fifo"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "verilog-axi"
+repository = "https://github.com/alexforencich/verilog-axi"
+commit = "516bd5dadc3365b7f9e225d2af8fe0b8d804fe53"
+license = "MIT"
+license_file = "COPYING"
+license_sha256 = "ba81481b2d63a33e0dce336d9e736130709549feeaf6cd424b34beba712baa50"
+attribution = "Alex Forencich and verilog-axi contributors"
+scope = "Standalone AXI RAM RTL only; excludes adapters, interconnects, DMA engines, benches and integration collateral."
+files = ["rtl/axi_ram.v"]
+top_files = ["rtl/axi_ram.v"]
+include_dirs = []
+defines = []
+top_modules = ["axi_ram"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "verilog-ethernet"
+repository = "https://github.com/alexforencich/verilog-ethernet"
+commit = "77320a9471d19c7dd383914bc049e02d9f4f1ffb"
+license = "MIT"
+license_file = "COPYING"
+license_sha256 = "8ea57f95365e9b16a5b516f422b71269183a1ae53bab5878ae6d69039e58fe77"
+attribution = "Alex Forencich and verilog-ethernet contributors"
+scope = "AXI-stream Ethernet FCS calculator plus LFSR dependency only; excludes MAC/PHY/IP/UDP blocks, examples, submodules and benches."
+files = ["rtl/axis_eth_fcs.v", "rtl/lfsr.v"]
+top_files = ["rtl/axis_eth_fcs.v"]
+include_dirs = []
+defines = []
+top_modules = ["axis_eth_fcs"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "aes"
+repository = "https://github.com/secworks/aes"
+commit = "80dc4718e1dcbbdb4b0dd1bdb393d8f7b98981dc"
+license = "BSD-2-Clause"
+license_file = "LICENSE"
+license_sha256 = "81899e14798bc6a06e02f48959e1825b9e631f0415bccf5b74e589dabd7c7f80"
+attribution = "Joachim Strömbergson and Secworks AES contributors"
+scope = "Seven AES RTL files only; excludes benches, software, documentation and integration collateral."
+files = ["src/rtl/aes.v", "src/rtl/aes_core.v", "src/rtl/aes_decipher_block.v", "src/rtl/aes_encipher_block.v", "src/rtl/aes_inv_sbox.v", "src/rtl/aes_key_mem.v", "src/rtl/aes_sbox.v"]
+top_files = ["src/rtl/aes.v"]
+include_dirs = []
+defines = []
+top_modules = ["aes"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "sha256"
+repository = "https://github.com/secworks/sha256"
+commit = "837c5cc396f001d18f2c765721c585716eb439ae"
+license = "BSD-2-Clause"
+license_file = "LICENSE"
+license_sha256 = "943866e8c0449b472dfebe4d10f0641240abb37778165eb4e68200ce1180890d"
+attribution = "Joachim Strömbergson and Secworks SHA-256 contributors"
+scope = "Four core SHA-256 RTL files only; excludes AXI/stream wrappers, benches and software."
+files = ["src/rtl/sha256.v", "src/rtl/sha256_core.v", "src/rtl/sha256_k_constants.v", "src/rtl/sha256_w_mem.v"]
+top_files = ["src/rtl/sha256.v"]
+include_dirs = []
+defines = []
+top_modules = ["sha256"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "sha512"
+repository = "https://github.com/secworks/sha512"
+commit = "e4cdf33418a3aa95cee25e1f0b1d8a6ede51c1bd"
+license = "BSD-2-Clause"
+license_file = "LICENSE"
+license_sha256 = "81899e14798bc6a06e02f48959e1825b9e631f0415bccf5b74e589dabd7c7f80"
+attribution = "Joachim Strömbergson and Secworks SHA-512 contributors"
+scope = "Five SHA-512 RTL files only; excludes benches, software and documentation."
+files = ["src/rtl/sha512.v", "src/rtl/sha512_core.v", "src/rtl/sha512_h_constants.v", "src/rtl/sha512_k_constants.v", "src/rtl/sha512_w_mem.v"]
+top_files = ["src/rtl/sha512.v"]
+include_dirs = []
+defines = []
+top_modules = ["sha512"]
+expected_scan_state = "complete"
+
+[[projects]]
+id = "chacha"
+repository = "https://github.com/secworks/chacha"
+commit = "7eaba360df9fed9fc2db98d5f3df81cf01e5b604"
+license = "BSD-2-Clause"
+license_file = "LICENSE"
+license_sha256 = "1d49794412fbcb73a87e6175a0a9c8c6f362dc0902b3e69b0f92fe8765c514ee"
+attribution = "Joachim Strömbergson and Secworks ChaCha contributors"
+scope = "Three ChaCha RTL files only; excludes benches, software and documentation."
+files = ["src/rtl/chacha.v", "src/rtl/chacha_core.v", "src/rtl/chacha_qr.v"]
+top_files = ["src/rtl/chacha.v"]
+include_dirs = []
+defines = []
+top_modules = ["chacha"]
+expected_scan_state = "complete"

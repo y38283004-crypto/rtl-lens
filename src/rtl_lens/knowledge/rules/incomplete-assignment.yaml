@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: incomplete-assignment
+severity: warning
+en:
+  title: Incomplete combinational assignment
+  cause: A combinational process leaves the output unassigned on at least one control-flow path.
+  risk: The retained previous value implies a latch, changing timing and behavior from pure combinational logic.
+  fix: Assign a default before the branch or assign the output in every branch.
+zh-CN:
+  title: 组合逻辑赋值不完整
+  cause: 组合过程至少有一条控制路径没有给输出赋值。
+  risk: 输出会保留旧值并推断锁存器，使时序和功能偏离预期的组合逻辑。
+  fix: 在分支前设置默认值，或确保每一条分支都明确给输出赋值。
+failing_example: failing/incomplete-assignment.sv
+fixed_example: fixed/incomplete-assignment.sv
+references: [https://verilator.org/guide/latest/warnings.html#latch]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: LATCH
+    verification: container

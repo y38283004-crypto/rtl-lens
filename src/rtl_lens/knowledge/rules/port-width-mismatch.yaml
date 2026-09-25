@@ -1,0 +1,24 @@
+schema_version: "1.0"
+rule_id: port-width-mismatch
+severity: error
+en:
+  title: Port connection width does not match the declaration
+  cause: A module port is connected to an expression or signal with fewer or more bits than the declared port width.
+  risk: The connection can silently extend or truncate data at the hierarchy boundary, corrupting values and interface assumptions.
+  fix: Connect a signal with the declared width or use an explicit, reviewed slice, concatenation, extension, or cast.
+zh-CN:
+  title: 端口连接位宽与声明不一致
+  cause: 模块端口连接到的表达式或信号位数少于或多于端口声明的位宽。
+  risk: 数据可能在层次边界被静默扩展或截断，从而破坏数值和接口约定。
+  fix: 连接与声明等宽的信号，或使用经过审查的显式切片、拼接、扩展或类型转换。
+failing_example: failing/port-width-mismatch.sv
+fixed_example: fixed/port-width-mismatch.sv
+references: [https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L772-L773]
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: port-width-expand
+    verification: local
+  - engine: pyslang
+    code: port-width-trunc
+    verification: local

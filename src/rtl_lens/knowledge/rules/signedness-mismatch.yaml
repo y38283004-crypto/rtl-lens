@@ -1,0 +1,29 @@
+schema_version: "1.0"
+rule_id: signedness-mismatch
+severity: warning
+en:
+  title: Signed and unsigned values are mixed implicitly
+  cause: An assignment or comparison combines operands with different signedness without an explicit conversion that states the intended numeric interpretation.
+  risk: Sign extension, zero extension, and comparison ordering can change unexpectedly, especially when the high bit is set.
+  fix: Make widths and signedness explicit with reviewed casts or consistently declared signal types before assigning or comparing values.
+zh-CN:
+  title: 有符号值与无符号值被隐式混用
+  cause: 赋值或比较组合了符号属性不同的操作数，却没有用显式转换说明预期的数值解释。
+  risk: 符号扩展、零扩展和比较顺序可能意外改变，特别是在最高位为一时。
+  fix: 在赋值或比较之前，用经过审查的显式类型转换或一致的信号声明明确位宽和符号属性。
+failing_example: failing/signedness-mismatch.sv
+fixed_example: fixed/signedness-mismatch.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#unsigned
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L783-L800
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: sign-compare
+    verification: local
+  - engine: pyslang
+    code: sign-conversion
+    verification: local
+  - engine: verilator
+    code: UNSIGNED
+    verification: container

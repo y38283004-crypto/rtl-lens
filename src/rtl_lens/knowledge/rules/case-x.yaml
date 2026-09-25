@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: case-x
+severity: warning
+en:
+  title: Casex treats X and Z bits as wildcards
+  cause: A casex statement ignores X and Z bits in both the selector and case items while choosing a matching branch.
+  risk: Unknown control bits can optimistically match a valid branch, hiding initialization bugs and making simulation disagree with hardware behavior.
+  fix: Replace casex with ordinary case for exact matching or casez with explicit question-mark wildcards, then include deliberate invalid-state handling.
+zh-CN:
+  title: casex 将 X 与 Z 位视为通配符
+  cause: casex 在选择匹配分支时，会忽略选择表达式和分支项中的 X、Z 位。
+  risk: 未知控制位可能乐观地匹配某个有效分支，从而掩盖初始化缺陷并造成仿真与硬件行为不一致。
+  fix: 精确匹配时改用普通 case；只需特定通配时使用带问号的 casez，并补充明确的非法状态处理。
+failing_example: failing/case-x.sv
+fixed_example: fixed/case-x.sv
+references: [https://verilator.org/guide/latest/warnings.html#casex]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: CASEX
+    verification: container

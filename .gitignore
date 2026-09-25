@@ -1,0 +1,15 @@
+.planning/
+.artifacts/
+.superpowers/
+.worktrees/
+.venv/
+dist/
+rtl-lens-reports/
+__pycache__/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]

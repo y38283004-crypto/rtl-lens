@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "project_root": "[demo]/芯片",
+    "started_at": "2026-08-17T00:00:00Z",
+    "duration_ms": 24,
+    "requested_engines": ["pyslang", "verilator"],
+    "completed_engines": ["pyslang"],
+    "config_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "redacted": false,
+    "scan_state": "partial",
+    "source_count": 1
+  },
+  "findings": [
+    {
+      "fingerprint": "1111111111111111111111111111111111111111111111111111111111111111",
+      "canonical_rule": "width-mismatch",
+      "severity": "error",
+      "location": {"path": "rtl/[top].sv", "line": 3, "column": 9},
+      "title": "Assignment [width] mismatch",
+      "message": "赋值从 [7:0] 截断为 [3:0]",
+      "explanation_id": "width-mismatch",
+      "baseline_state": "new",
+      "provenance": [
+        {
+          "engine": "pyslang",
+          "engine_version": "11.0",
+          "original_code": "constant-conversion",
+          "severity": "error",
+          "location": {"path": "rtl/[top].sv", "line": 3, "column": 9},
+          "message": "implicit conversion [7:0] -> [3:0]"
+        }
+      ]
+    },
+    {
+      "fingerprint": "2222222222222222222222222222222222222222222222222222222222222222",
+      "canonical_rule": "unknown:pyslang:MYSTERY",
+      "severity": "warning",
+      "location": {"path": "rtl/[top].sv", "line": 7, "column": 2},
+      "title": "Unknown [diagnostic]",
+      "message": "raw [link=https://example.invalid]message[/link] is preserved",
+      "explanation_id": null,
+      "baseline_state": "new",
+      "provenance": [
+        {
+          "engine": "pyslang",
+          "original_code": "MYSTERY",
+          "severity": "warning",
+          "location": {"path": "rtl/[top].sv", "line": 7, "column": 2},
+          "message": "raw [link=https://example.invalid]message[/link] is preserved"
+        }
+      ]
+    }
+  ],
+  "engine_runs": [
+    {"engine": "pyslang", "state": "completed", "version": "11.0", "duration_ms": 20},
+    {
+      "engine": "verilator",
+      "state": "unavailable",
+      "failure": {
+        "kind": "unavailable",
+        "message": "verilator [bold]boom[/bold] is unavailable",
+        "required": false
+      },
+      "duration_ms": 0
+    }
+  ],
+  "resolved_fingerprints": []
+}

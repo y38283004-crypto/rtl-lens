@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: declaration-filename
+severity: info
+en:
+  title: Top declaration name does not match its filename
+  cause: The primary module or interface declaration uses a different name from the source file that contains it.
+  risk: Name-based navigation, file discovery, build scripts, and review conventions become less predictable even when the HDL remains legal.
+  fix: Rename the primary declaration or the source file so their basenames match consistently.
+zh-CN:
+  title: 顶层声明名称与文件名不一致
+  cause: 源文件中的主要 module 或 interface 声明使用了与文件名不同的名称。
+  risk: 即使 HDL 语法合法，按名称导航、文件发现、构建脚本和代码审查约定也会变得不稳定。
+  fix: 重命名主要声明或源文件，使两者的基本名称保持一致。
+failing_example: failing/declaration_filename.sv
+fixed_example: fixed/declaration_filename.sv
+references: [https://verilator.org/guide/latest/warnings.html#declfilename]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: DECLFILENAME
+    verification: container

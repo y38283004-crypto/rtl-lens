@@ -1,0 +1,108 @@
+{
+  "always-comb-order": [
+    {"engine": "verilator", "code": "ALWCOMBORDER", "verification": "container"}
+  ],
+  "always-never": [
+    {"engine": "verilator", "code": "ALWNEVER", "verification": "container"}
+  ],
+  "ascending-range": [
+    {"engine": "verilator", "code": "ASCRANGE", "verification": "container"}
+  ],
+  "assignment-in-expression": [
+    {"engine": "verilator", "code": "ASSIGNEQEXPR", "verification": "container"}
+  ],
+  "assignment-to-input": [
+    {"engine": "verilator", "code": "ASSIGNIN", "verification": "container"}
+  ],
+  "blocking-and-nonblocking": [
+    {"engine": "verilator", "code": "BLKANDNBLK", "verification": "container"}
+  ],
+  "blocking-in-sequential": [
+    {"engine": "verilator", "code": "BLKSEQ", "verification": "container"}
+  ],
+  "case-incomplete": [
+    {"engine": "verilator", "code": "CASEINCOMPLETE", "verification": "container"}
+  ],
+  "case-overlap": [
+    {"engine": "verilator", "code": "CASEOVERLAP", "verification": "container"}
+  ],
+  "case-with-x": [
+    {"engine": "verilator", "code": "CASEWITHX", "verification": "container"}
+  ],
+  "case-x": [
+    {"engine": "verilator", "code": "CASEX", "verification": "container"}
+  ],
+  "combinational-delay": [
+    {"engine": "verilator", "code": "COMBDLY", "verification": "container"}
+  ],
+  "constant-comparison": [
+    {"engine": "verilator", "code": "CMPCONST", "verification": "container"}
+  ],
+  "declaration-filename": [
+    {"engine": "verilator", "code": "DECLFILENAME", "verification": "container"}
+  ],
+  "deprecated-defparam": [
+    {"engine": "verilator", "code": "DEFPARAM", "verification": "container"}
+  ],
+  "duplicate-definition": [
+    {"engine": "pyslang", "code": "duplicate-definition", "verification": "local"},
+    {"engine": "verilator", "code": "MODDUP", "verification": "container"}
+  ],
+  "empty-pin-connection": [
+    {"engine": "pyslang", "code": "empty-inout-connection", "verification": "local"},
+    {"engine": "pyslang", "code": "empty-input-connection", "verification": "local"},
+    {"engine": "pyslang", "code": "empty-output-connection", "verification": "local"},
+    {"engine": "verilator", "code": "PINCONNECTEMPTY", "verification": "container"}
+  ],
+  "implicit-net": [
+    {"engine": "verilator", "code": "IMPLICIT", "verification": "container"}
+  ],
+  "incomplete-assignment": [
+    {"engine": "verilator", "code": "LATCH", "verification": "container"}
+  ],
+  "missing-pin": [
+    {"engine": "pyslang", "code": "unconnected-inout-port", "verification": "local"},
+    {"engine": "pyslang", "code": "unconnected-input-port", "verification": "local"},
+    {"engine": "pyslang", "code": "unconnected-output-port", "verification": "local"},
+    {"engine": "verilator", "code": "PINMISSING", "verification": "container"}
+  ],
+  "multiple-drivers": [
+    {"engine": "verilator", "code": "MULTIDRIVEN", "verification": "container"}
+  ],
+  "out-of-range-select": [
+    {"engine": "pyslang", "code": "index-oob", "verification": "local"},
+    {"engine": "pyslang", "code": "range-oob", "verification": "local"},
+    {"engine": "verilator", "code": "SELRANGE", "verification": "container"}
+  ],
+  "port-width-mismatch": [
+    {"engine": "pyslang", "code": "port-width-expand", "verification": "local"},
+    {"engine": "pyslang", "code": "port-width-trunc", "verification": "local"}
+  ],
+  "signedness-mismatch": [
+    {"engine": "pyslang", "code": "sign-compare", "verification": "local"},
+    {"engine": "pyslang", "code": "sign-conversion", "verification": "local"},
+    {"engine": "verilator", "code": "UNSIGNED", "verification": "container"}
+  ],
+  "timescale-mismatch": [
+    {"engine": "pyslang", "code": "DiagCode(MissingTimeScale)", "verification": "local"},
+    {"engine": "verilator", "code": "TIMESCALEMOD", "verification": "container"}
+  ],
+  "undeclared-identifier": [
+    {"engine": "pyslang", "code": "DiagCode(UndeclaredIdentifier)", "verification": "local"}
+  ],
+  "undriven-signal": [
+    {"engine": "verilator", "code": "UNDRIVEN", "verification": "container"}
+  ],
+  "unsupported-construct": [],
+  "unused-signal": [
+    {"engine": "verilator", "code": "UNUSEDSIGNAL", "verification": "container"}
+  ],
+  "width-mismatch": [
+    {"engine": "pyslang", "code": "constant-conversion", "verification": "local"},
+    {"engine": "pyslang", "code": "width-expand", "verification": "local"},
+    {"engine": "pyslang", "code": "width-trunc", "verification": "local"},
+    {"engine": "verilator", "code": "WIDTH", "verification": "container"},
+    {"engine": "verilator", "code": "WIDTHEXPAND", "verification": "container"},
+    {"engine": "verilator", "code": "WIDTHTRUNC", "verification": "container"}
+  ]
+}

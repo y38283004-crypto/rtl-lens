@@ -1,0 +1,4 @@
+[scan]
+source_roots = ["."]
+engine_mode = "required"
+fail_on = "warning"

@@ -1,0 +1,26 @@
+schema_version: "1.0"
+rule_id: timescale-mismatch
+severity: warning
+en:
+  title: Design units use inconsistent or missing time scales
+  cause: Some design units declare time units and precision while another unit in the same compilation omits or differs from that timing policy.
+  risk: Delay literals can represent different real durations across hierarchy, producing simulation behavior that depends on file and tool configuration.
+  fix: Declare one consistent timeunit and timeprecision or timescale policy for every compiled design unit.
+zh-CN:
+  title: 设计单元的时间尺度不一致或缺失
+  cause: 部分设计单元声明了时间单位和精度，而同一编译中的其他单元遗漏或采用了不同的时序策略。
+  risk: 延时字面量在不同层次中可能代表不同真实时长，使仿真行为依赖文件和工具配置。
+  fix: 为所有参与编译的设计单元声明一致的 timeunit、timeprecision 或 timescale 策略。
+failing_example: failing/timescale-mismatch.sv
+fixed_example: fixed/timescale-mismatch.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#timescalemod
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L1162
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: DiagCode(MissingTimeScale)
+    verification: local
+  - engine: verilator
+    code: TIMESCALEMOD
+    verification: container

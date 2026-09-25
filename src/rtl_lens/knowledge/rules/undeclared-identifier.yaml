@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: undeclared-identifier
+severity: error
+en:
+  title: Identifier is not declared in the visible scope
+  cause: An expression references a name that is misspelled, missing a declaration, or unavailable because the intended package or scope was not imported.
+  risk: Compilation cannot resolve the design intent, and a nearby similarly named signal may lead to an incorrect manual repair.
+  fix: Correct the spelling and declare, qualify, or import the intended symbol in the proper scope.
+zh-CN:
+  title: 标识符未在可见作用域中声明
+  cause: 表达式引用了拼写错误、缺少声明，或因未导入目标 package 或作用域而不可见的名称。
+  risk: 编译器无法解析设计意图，而附近的相似信号名还可能诱导错误的人工修复。
+  fix: 修正拼写，并在正确作用域中声明、限定或导入目标符号。
+failing_example: failing/undeclared-identifier.sv
+fixed_example: fixed/undeclared-identifier.sv
+references: [https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L968]
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: DiagCode(UndeclaredIdentifier)
+    verification: local

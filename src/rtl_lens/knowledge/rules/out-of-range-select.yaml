@@ -1,0 +1,29 @@
+schema_version: "1.0"
+rule_id: out-of-range-select
+severity: error
+en:
+  title: Bit or part select lies outside the declared range
+  cause: An index or slice names bits that do not exist in the selected vector's declared bounds.
+  risk: Simulation can produce unknown values while synthesis may optimize or interpret the invalid access differently, corrupting downstream logic.
+  fix: Use indices within the declared bounds and derive parameterized selects from checked widths and legal endpoints.
+zh-CN:
+  title: 位选择或部分选择超出声明范围
+  cause: 索引或切片引用了被选向量声明边界之外、实际不存在的位。
+  risk: 仿真可能产生未知值，而综合工具可能以不同方式优化或解释非法访问，导致下游逻辑错误。
+  fix: 使用声明范围内的索引，并从已校验的位宽和合法端点推导参数化选择范围。
+failing_example: failing/out-of-range-select.sv
+fixed_example: fixed/out-of-range-select.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#selrange
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L779-L780
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: index-oob
+    verification: local
+  - engine: pyslang
+    code: range-oob
+    verification: local
+  - engine: verilator
+    code: SELRANGE
+    verification: container

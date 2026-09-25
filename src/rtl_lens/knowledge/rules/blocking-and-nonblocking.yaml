@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: blocking-and-nonblocking
+severity: error
+en:
+  title: One variable mixes blocking and nonblocking assignments
+  cause: The same variable is written with both blocking and nonblocking assignment styles, often from different processes.
+  risk: The variable can have ambiguous scheduling and ownership, causing race-sensitive simulation results and synthesis failures.
+  fix: Give the variable one owner and use a consistent assignment discipline appropriate to that process.
+zh-CN:
+  title: 同一变量混用了阻塞与非阻塞赋值
+  cause: 同一变量同时被阻塞赋值和非阻塞赋值写入，且这些写入通常来自不同过程。
+  risk: 变量的调度顺序和所有权会变得不明确，可能导致竞争相关的仿真结果和综合失败。
+  fix: 为变量指定唯一写入者，并根据该过程的用途统一采用一种赋值方式。
+failing_example: failing/blocking-and-nonblocking.sv
+fixed_example: fixed/blocking-and-nonblocking.sv
+references: [https://verilator.org/guide/latest/warnings.html#blkandnblk]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: BLKANDNBLK
+    verification: container

@@ -1,0 +1,71 @@
+name: Action smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: action-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Local composite Action
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Scan the clean fixture without upload
+        id: scan
+        uses: ./
+        with:
+          project-path: tests/action/fixtures/clean
+          report-format: both
+          upload-report: "false"
+      - name: Verify retained local reports and public exit code
+        env:
+          RTL_LENS_SCAN_EXIT_CODE: ${{ steps.scan.outputs.scan-exit-code }}
+        run: |
+          test "$RTL_LENS_SCAN_EXIT_CODE" = "0"
+          test -f rtl-lens-reports/report.json
+          test -f rtl-lens-reports/report.html
+      - name: Scan a policy failure without stopping the job
+        id: width
+        continue-on-error: true
+        uses: ./
+        with:
+          project-path: tests/action/fixtures/width-mismatch
+          fail-on: warning
+          report-format: json
+          upload-report: "false"
+      - name: Verify policy exit and selected report
+        env:
+          RTL_LENS_SCAN_EXIT_CODE: ${{ steps.width.outputs.scan-exit-code }}
+          RTL_LENS_STEP_OUTCOME: ${{ steps.width.outcome }}
+        run: |
+          test "$RTL_LENS_STEP_OUTCOME" = "failure"
+          test "$RTL_LENS_SCAN_EXIT_CODE" = "1"
+          test -f rtl-lens-reports/report.json
+          test ! -e rtl-lens-reports/report.html
+      - name: Reject an invalid severity without stopping the job
+        id: invalid
+        continue-on-error: true
+        uses: ./
+        with:
+          project-path: tests/action/fixtures/clean
+          fail-on: critical
+          upload-report: "false"
+      - name: Verify usage exit
+        env:
+          RTL_LENS_SCAN_EXIT_CODE: ${{ steps.invalid.outputs.scan-exit-code }}
+          RTL_LENS_STEP_OUTCOME: ${{ steps.invalid.outcome }}
+        run: |
+          test "$RTL_LENS_STEP_OUTCOME" = "failure"
+          test "$RTL_LENS_SCAN_EXIT_CODE" = "3"

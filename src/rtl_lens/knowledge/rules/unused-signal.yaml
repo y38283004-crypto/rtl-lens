@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: unused-signal
+severity: info
+en:
+  title: Signal is declared but never read
+  cause: Logic drives or declares a signal whose value is not consumed by any observable behavior.
+  risk: Dead signals obscure intent, hide incomplete connections, and add avoidable review and synthesis noise.
+  fix: Remove the signal if obsolete, or connect and use it where the design intended.
+zh-CN:
+  title: 信号已声明但从未读取
+  cause: 设计声明或驱动了一个信号，但任何可观察行为都没有使用它的值。
+  risk: 无效信号会遮蔽设计意图、隐藏漏接问题，并增加审查和综合噪声。
+  fix: 若信号已经废弃则删除；若本应参与功能，请补全连接并实际使用它。
+failing_example: failing/unused-signal.sv
+fixed_example: fixed/unused-signal.sv
+references: [https://verilator.org/guide/latest/warnings.html#unusedsignal]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: UNUSEDSIGNAL
+    verification: container

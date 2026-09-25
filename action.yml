@@ -1,0 +1,62 @@
+name: RTL Lens
+description: Scan Verilog and SystemVerilog with a pinned, offline RTL Lens container.
+inputs:
+  project-path:
+    description: Project directory, relative to the GitHub workspace unless absolute.
+    required: false
+    default: "."
+  config-path:
+    description: Optional configuration file, relative to the GitHub workspace unless absolute.
+    required: false
+    default: ""
+  fail-on:
+    description: Lowest finding severity that returns policy exit code 1.
+    required: false
+    default: error
+  report-format:
+    description: "Reports retained after the scan: json, html, or both."
+    required: false
+    default: both
+  upload-report:
+    description: Upload retained reports only when this value is exactly true.
+    required: false
+    default: "false"
+  artifact-name:
+    description: Artifact name used when report upload is explicitly enabled.
+    required: false
+    default: rtl-lens-report
+outputs:
+  report-paths:
+    description: Newline-separated retained report paths.
+    value: ${{ steps.scan.outputs.report-paths }}
+  scan-exit-code:
+    description: RTL Lens public exit code (0, 1, 2, or 3).
+    value: ${{ steps.scan.outputs.scan-exit-code }}
+runs:
+  using: composite
+  steps:
+    - name: Build and run RTL Lens offline
+      id: scan
+      shell: bash
+      env:
+        RTL_LENS_INPUT_PROJECT_PATH: ${{ inputs.project-path }}
+        RTL_LENS_INPUT_CONFIG_PATH: ${{ inputs.config-path }}
+        RTL_LENS_INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        RTL_LENS_INPUT_REPORT_FORMAT: ${{ inputs.report-format }}
+        RTL_LENS_INPUT_UPLOAD_REPORT: ${{ inputs.upload-report }}
+      run: '"$GITHUB_ACTION_PATH/scripts/action-entrypoint.sh"'
+
+    - name: Upload RTL Lens reports
+      if: ${{ always() && inputs.upload-report == 'true' }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ steps.scan.outputs.report-paths }}
+        if-no-files-found: error
+
+    - name: Propagate RTL Lens exit code
+      if: ${{ always() }}
+      shell: bash
+      env:
+        RTL_LENS_SCAN_EXIT_CODE: ${{ steps.scan.outputs.scan-exit-code }}
+      run: exit "${RTL_LENS_SCAN_EXIT_CODE:-2}"

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Verilator",
+          "version": "5.040"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "WIDTH",
+          "level": "warning",
+          "message": {
+            "text": "Operator ASSIGN expects 8 bits on the Assign RHS, but Assign RHS's CONST generates 4 bits."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "rtl/top.sv"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 5
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

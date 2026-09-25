@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: case-with-x
+severity: warning
+en:
+  title: Case item contains a literal X value
+  cause: A case item uses X as a value even though synthesized hardware cannot reliably compare an ordinary signal against an unknown simulation state.
+  risk: Simulation intent can diverge from synthesized behavior, allowing unknown-state handling to hide real reset or initialization defects.
+  fix: Express intentional wildcard bits with casez or case inside, and handle genuinely unknown control values explicitly with assertions or a default path.
+zh-CN:
+  title: case 分支项包含字面量 X
+  cause: case 分支项把 X 当作匹配值，但综合后的硬件无法可靠地将普通信号与仿真未知态进行比较。
+  risk: 仿真意图可能与综合结果不一致，使未知态处理掩盖真实的复位或初始化缺陷。
+  fix: 若需要通配请使用 casez 或 case inside，并通过断言或 default 分支显式处理真正的未知控制值。
+failing_example: failing/case-with-x.sv
+fixed_example: fixed/case-with-x.sv
+references: [https://verilator.org/guide/latest/warnings.html#casewithx]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: CASEWITHX
+    verification: container

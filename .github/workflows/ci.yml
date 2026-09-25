@@ -1,0 +1,181 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.7"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Sync locked environment
+        run: uv sync --locked --all-groups
+      - name: Run non-browser tests
+        run: uv run pytest --ignore=tests/browser -q -p no:cacheprovider
+
+  quality:
+    name: Quality and coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.7"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Sync locked environment
+        run: uv sync --locked --all-groups
+      - name: Lint
+        run: uv run ruff check --no-cache src tests tools
+      - name: Check formatting
+        run: uv run ruff format --check src tests tools
+      - name: Type check
+        run: uv run mypy src
+      - name: Enforce coverage
+        run: >-
+          uv run pytest --ignore=tests/browser
+          --cov=rtl_lens --cov-report=term-missing --cov-fail-under=90
+          -q -p no:cacheprovider
+
+  browser:
+    name: Offline HTML browser behavior
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.7"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Sync locked environment
+        run: uv sync --locked --all-groups
+      - name: Install Chromium and system dependencies
+        run: uv run playwright install --with-deps chromium
+      - name: Run browser tests
+        run: uv run pytest tests/browser -q -p no:cacheprovider
+
+  package:
+    name: Locked package artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.7"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - name: Check lock without changing it
+        run: uv lock --check
+      - name: Sync locked environment
+        run: uv sync --locked --all-groups
+      - name: Verify package contents
+        run: uv run pytest tests/automation/test_package_contract.py -q -p no:cacheprovider
+      - name: Build wheel and source distribution
+        run: uv build --no-sources
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: rtl-lens-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  container:
+    name: Pinned Verilator container
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      IMAGE_SOURCE: ${{ github.server_url }}/${{ github.repository }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Build test target
+        run: >-
+          docker build --target test
+          --build-arg "IMAGE_SOURCE=$IMAGE_SOURCE"
+          --tag rtl-lens:test .
+      - name: Run all 27 real Verilator mapping cases
+        run: >-
+          docker run --rm --network=none --entrypoint python rtl-lens:test
+          -m pytest
+          tests/knowledge/test_rule_examples.py::test_verilator_mapping_is_emitted_only_by_the_failing_example
+          -q -p no:cacheprovider
+      - name: Build release target
+        run: >-
+          docker build --target release
+          --build-arg "IMAGE_SOURCE=$IMAGE_SOURCE"
+          --tag rtl-lens:ci .
+      - name: Smoke installed CLI and package resources
+        run: |
+          docker run --rm --network=none rtl-lens:ci --help
+          docker run --rm --network=none --entrypoint python rtl-lens:ci -c "from importlib import resources; assert resources.files('rtl_lens.knowledge').joinpath('rules', 'width-mismatch.yaml').is_file()"
+      - name: Verify native version, labels, and non-root user
+        shell: bash
+        run: |
+          version=$(docker run --rm --network=none --entrypoint verilator rtl-lens:ci --version)
+          test "$version" = "Verilator 5.040 2025-08-30 rev v5.040"
+          label=$(docker image inspect --format '{{ index .Config.Labels "io.rtl-lens.verilator.version" }}' rtl-lens:ci)
+          test "$label" = "5.040"
+          commit=$(docker image inspect --format '{{ index .Config.Labels "io.rtl-lens.verilator.commit" }}' rtl-lens:ci)
+          test "$commit" = "51cdf52d0f3a3e59b51fd87762646a851e9f4aff"
+          user=$(docker image inspect --format '{{ .Config.User }}' rtl-lens:ci)
+          test "$user" = "10001:10001"

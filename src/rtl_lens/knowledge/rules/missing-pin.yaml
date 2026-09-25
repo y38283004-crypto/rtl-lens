@@ -1,0 +1,32 @@
+schema_version: "1.0"
+rule_id: missing-pin
+severity: warning
+en:
+  title: Module instance omits declared ports
+  cause: A module instance leaves one or more declared input, output, or inout ports absent from its connection list.
+  risk: Required inputs may float and outputs may be lost, while an accidental omission can look like an intentionally unused interface.
+  fix: Connect every required port explicitly and document intentionally unused outputs without omitting required inputs or bidirectional signals.
+zh-CN:
+  title: 模块实例遗漏了已声明端口
+  cause: 模块实例的连接列表中缺少一个或多个已声明的 input、output 或 inout 端口。
+  risk: 必需输入可能悬空、输出可能丢失，而意外遗漏看起来又可能像有意不用该接口。
+  fix: 显式连接所有必需端口；对有意不用的输出进行说明，但不要遗漏必需输入或双向信号。
+failing_example: failing/missing-pin.sv
+fixed_example: fixed/missing-pin.sv
+references:
+  - https://verilator.org/guide/latest/warnings.html#pinmissing
+  - https://github.com/MikePopoloski/slang/blob/a5ab85255e2a479a0c34d0d3d9cddc8259cfff07/scripts/diagnostics.txt#L571-L573
+review_status: reviewed
+engine_mappings:
+  - engine: pyslang
+    code: unconnected-inout-port
+    verification: local
+  - engine: pyslang
+    code: unconnected-input-port
+    verification: local
+  - engine: pyslang
+    code: unconnected-output-port
+    verification: local
+  - engine: verilator
+    code: PINMISSING
+    verification: container

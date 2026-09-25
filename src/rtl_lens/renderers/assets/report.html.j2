@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>RTL Lens scan report</title>
+  <style>{% include "report.css" %}</style>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">RTL Lens</p>
+        <h1>Scan report</h1>
+        <p class="project-root">{{ report.metadata.project_root }}</p>
+      </div>
+      <span class="state state-{{ report.metadata.scan_state.value }}">{{ report.metadata.scan_state.value | upper }}</span>
+    </header>
+
+    <section class="summary" data-testid="summary" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Summary</h2>
+      <div class="summary-grid">
+        <div><strong>{{ report.findings | length }} findings</strong><span>Total diagnostics</span></div>
+        <div><strong>{{ severity_counts.error }} error</strong><span>Blocking severity</span></div>
+        <div><strong>{{ severity_counts.warning }} warning</strong><span>Review recommended</span></div>
+        <div><strong>{{ severity_counts.info }} info</strong><span>Informational</span></div>
+        {% for card in trend_summary_cards %}
+        <div><strong>{{ card.value }}</strong><span>{{ card.meaning }}</span></div>
+        {% endfor %}
+      </div>
+      <p class="metadata">
+        {{ report.metadata.source_count }} sources ·
+        {{ report.metadata.completed_engines | length }}/{{ report.metadata.requested_engines | length }} engines completed ·
+        {{ report.metadata.duration_ms }} ms
+      </p>
+    </section>
+
+    <section data-testid="engine-status" aria-labelledby="engines-heading">
+      <h2 id="engines-heading">Engine status</h2>
+      <div class="engine-grid">
+        {% for run in report.engine_runs %}
+        <article class="engine-card">
+          <div class="engine-heading">
+            <h3>{{ run.engine }}</h3>
+            <span class="engine-state engine-state-{{ run.state.value }}">{{ run.state.value | upper }}</span>
+          </div>
+          {% if run.version %}<p>Version: {{ run.version }}</p>{% endif %}
+          <p>Duration: {{ run.duration_ms }} ms</p>
+          {% if run.failure %}
+          <p class="failure"><strong>{{ run.failure.kind }}</strong>: {{ run.failure.message }} ({{ "required" if run.failure.required else "optional" }})</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if analysis_warnings %}
+    <section id="analysis-warnings" class="analysis-panel warning-panel" data-testid="analysis-warnings" aria-labelledby="warnings-heading">
+      <h2 id="warnings-heading">Analysis warnings</h2>
+      <p>WARNING: Optional report analysis was degraded. Scan diagnostics and completeness remain unchanged.</p>
+      <ul class="analysis-list">
+        {% for warning in analysis_warnings %}
+        <li><strong>WARNING — {{ warning.kind }}</strong>: {{ warning.message }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <section id="baseline-trends" class="analysis-panel" data-testid="baseline-trends" aria-labelledby="trends-heading">
+      <h2 id="trends-heading">Trend comparison</h2>
+      <p><strong>{{ trend_intro_title }}</strong> {{ trend_intro_message }}</p>
+      <dl class="analysis-counts">
+        {% for group in trend_groups %}
+        <div>
+          <dt>{{ group.summary }}</dt>
+          <dd>{{ group.meaning }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+      <div class="trend-groups">
+        {% for group in trend_groups %}
+        {% if group.entries %}
+        <section class="trend-group" aria-labelledby="trend-{{ group.slug }}-heading">
+          <h3 id="trend-{{ group.slug }}-heading">{{ group.label }}</h3>
+          <ul class="analysis-list">
+            {% for item in group.entries %}
+            <li>
+              <strong>{{ group.label }}</strong>:
+              {% if item.finding %}{{ item.finding.title }} — {% endif %}<code>{{ item.fingerprint }}</code>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="module-relationships" class="analysis-panel" data-testid="module-relationships" aria-labelledby="relationships-heading">
+      <h2 id="relationships-heading">Module relationships</h2>
+      <dl class="analysis-counts">
+        <div><dt>{{ report.module_graph.nodes | length }} nodes</dt><dd>Declared or referenced modules.</dd></div>
+        <div><dt>{{ total_relationship_count }} relationships</dt><dd>Parent modules instantiating child modules.</dd></div>
+        <div><dt>{{ report.module_graph.unresolved | length }} unresolved {{ "module" if report.module_graph.unresolved | length == 1 else "modules" }}</dt><dd>Referenced names without a matching module definition.</dd></div>
+      </dl>
+      {% if total_relationship_count %}
+      <p>Displaying {{ displayed_relationship_count }} of {{ total_relationship_count }} relationships. The complete artifact remains available in report data and JSON output.</p>
+      <div class="relationship-search">
+        <label for="relationship-search">Search module relationships</label>
+        <input id="relationship-search" type="search" autocomplete="off" aria-describedby="relationship-visible-count">
+        <p id="relationship-visible-count" data-testid="relationship-visible-count" aria-live="polite">{{ displayed_relationship_count }} {{ "relationship" if displayed_relationship_count == 1 else "relationships" }} visible</p>
+      </div>
+      <div class="relationship-table-region" role="region" aria-labelledby="relationships-table-caption" tabindex="0">
+        <table>
+          <caption id="relationships-table-caption">Module relationships. UNRESOLVED means no matching module definition was found.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Parent module</th>
+              <th scope="col">Instantiated module</th>
+              <th scope="col">Resolution</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in relationship_rows %}
+            <tr data-testid="relationship-row" data-search="{{ row.search }}">
+              <td><code>{{ row.parent }}</code></td>
+              <td><code>{{ row.child }}</code></td>
+              <td><strong class="relationship-state relationship-state-{{ "unresolved" if row.unresolved else "resolved" }}">{{ "UNRESOLVED" if row.unresolved else "RESOLVED" }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-state">No module relationships were extracted.</p>
+      {% endif %}
+    </section>
+
+    <section id="findings" aria-labelledby="findings-heading">
+      <div class="findings-heading">
+        <h2 id="findings-heading">Findings</h2>
+        <p data-testid="visible-count" aria-live="polite">{{ report.findings | length }} {{ "finding" if report.findings | length == 1 else "findings" }} visible</p>
+      </div>
+      <div class="filters" aria-label="Finding filters">
+        <div>
+          <label for="severity-filter">Severity</label>
+          <select id="severity-filter">
+            <option value="all">All severities</option>
+            <option value="error">Error</option>
+            <option value="warning">Warning</option>
+            <option value="info">Info</option>
+          </select>
+        </div>
+        <div>
+          <label for="baseline-filter">Comparison</label>
+          <select id="baseline-filter">
+            <option value="all">All comparison states</option>
+            {% for option in comparison_options %}<option value="{{ option.token }}">{{ option.label | title }}</option>{% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="engine-filter">Engine</label>
+          <select id="engine-filter">
+            <option value="all">All engines</option>
+            {% for option in engine_options %}<option value="{{ option.token }}">{{ option.name }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div id="finding-list" class="finding-list">
+        {% for item in findings %}
+        {% set finding = item.finding %}
+        <article class="finding-card severity-{{ finding.severity.value }}"
+                 data-testid="finding-row"
+                 data-severity="{{ finding.severity.value }}"
+                 data-baseline="{{ item.comparison.token }}"
+                 data-engines='{{ item.engines | tojson }}'>
+          <div class="finding-meta">
+            <span class="severity-label">{{ finding.severity.value | upper }}</span>
+            <span>{{ item.comparison.label }}</span>
+            <span>{{ finding.canonical_rule }}</span>
+          </div>
+          <h3>{{ finding.title }}</h3>
+          <p class="location">{{ finding.location.path }}:{{ finding.location.line }}:{{ finding.location.column }}</p>
+          {% if finding.message %}<p>{{ finding.message }}</p>{% endif %}
+          {% if finding.symbol %}<p><strong>Symbol:</strong> {{ finding.symbol }}</p>{% endif %}
+          {% if finding.source_snippet %}<pre><code>{{ finding.source_snippet }}</code></pre>{% endif %}
+          {% if item.explanation %}
+          <div class="explanations">
+            <section class="explanation" data-testid="explanation-en" lang="en">
+              <h4>English</h4>
+              <h5>{{ item.explanation.en.title }}</h5>
+              <dl>
+                <dt>Cause</dt><dd>{{ item.explanation.en.cause }}</dd>
+                <dt>Risk</dt><dd>{{ item.explanation.en.risk }}</dd>
+                <dt>Fix</dt><dd>{{ item.explanation.en.fix }}</dd>
+              </dl>
+            </section>
+            <section class="explanation" data-testid="explanation-zh-cn" lang="zh-CN">
+              <h4>简体中文</h4>
+              <h5>{{ item.explanation.zh_cn.title }}</h5>
+              <dl>
+                <dt>原因</dt><dd>{{ item.explanation.zh_cn.cause }}</dd>
+                <dt>风险</dt><dd>{{ item.explanation.zh_cn.risk }}</dd>
+                <dt>修复</dt><dd>{{ item.explanation.zh_cn.fix }}</dd>
+              </dl>
+            </section>
+          </div>
+          {% else %}
+          <p class="explanation-state">No curated explanation</p>
+          {% endif %}
+          {% if finding.provenance %}
+          <details>
+            <summary>Raw diagnostics ({{ finding.provenance | length }})</summary>
+            {% for raw in finding.provenance %}
+            <div class="raw-diagnostic">
+              <p><strong>{{ raw.engine }}/{{ raw.original_code }}</strong>{% if raw.engine_version %} · {{ raw.engine_version }}{% endif %}</p>
+              <p>{{ raw.location.path }}:{{ raw.location.line }}:{{ raw.location.column }}</p>
+              <p>{{ raw.message }}</p>
+              {% if raw.source_snippet %}<pre><code>{{ raw.source_snippet }}</code></pre>{% endif %}
+            </div>
+            {% endfor %}
+          </details>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+  <script id="report-data" type="application/json">{{ report_data | tojson }}</script>
+  <script>{% include "report.js" %}</script>
+</body>
+</html>

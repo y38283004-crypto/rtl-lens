@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: undriven-signal
+severity: warning
+en:
+  title: Signal has no driver
+  cause: A declared signal is read or exposed without any continuous, procedural, or port driver.
+  risk: Its value remains unknown or tool-dependent, contaminating downstream control and datapath logic.
+  fix: Connect the intended source or assign an explicit deterministic value on every required path.
+zh-CN:
+  title: 信号没有任何驱动源
+  cause: 某个已声明信号被读取或输出，但没有连续赋值、过程赋值或端口连接来驱动它。
+  risk: 该信号会保持未知或依赖工具的取值，并污染后续控制与数据通路。
+  fix: 连接预期的驱动源，或在所有必要路径上赋予明确且确定的值。
+failing_example: failing/undriven-signal.sv
+fixed_example: fixed/undriven-signal.sv
+references: [https://verilator.org/guide/latest/warnings.html#undriven]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: UNDRIVEN
+    verification: container

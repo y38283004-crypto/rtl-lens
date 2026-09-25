@@ -1,0 +1,83 @@
+name: Bug or false positive
+description: Report a reproducible defect or a diagnostic that should not be emitted.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security vulnerabilities or conduct concerns here. Use GitHub Security → Advisories → Report a vulnerability.
+        Remove secrets, tokens, credentials, private source, customer data, and IP addresses from every field and attachment.
+  - type: input
+    id: version
+    attributes:
+      label: RTL Lens version or commit
+      description: Include the output of `rtl-lens version` when available.
+    validations:
+      required: true
+  - type: input
+    id: operating_system
+    attributes:
+      label: Operating system
+      placeholder: Windows 11, Ubuntu 24.04, macOS 15, or equivalent
+    validations:
+      required: true
+  - type: input
+    id: python_version
+    attributes:
+      label: Python version
+    validations:
+      required: true
+  - type: input
+    id: engine_versions
+    attributes:
+      label: Engine versions
+      description: Include PySlang and Verilator versions, or say which engine was used.
+    validations:
+      required: true
+  - type: textarea
+    id: minimal_rtl
+    attributes:
+      label: Minimal sanitized RTL
+      description: Provide the smallest sanitized Verilog/SystemVerilog example. Do not include secrets or IP addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Provide the relevant sanitized `.rtl-lens.toml` settings.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and reproduction
+      description: Include the command and exact steps needed to reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and sanitized logs
+      description: Remove secrets, private source, customer data, and IP addresses from logs.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction steps
+    validations:
+      required: true
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true

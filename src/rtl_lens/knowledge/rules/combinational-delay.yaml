@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: combinational-delay
+severity: warning
+en:
+  title: Combinational logic contains a procedural delay
+  cause: A combinational process uses a delay control even though synthesizable combinational hardware is defined by logic, not simulator time delays.
+  risk: The delay may be ignored or transformed by tools, so simulation timing can diverge from the synthesized circuit.
+  fix: Remove the delay from synthesizable combinational logic and place timing stimulus in a testbench or model intended latency with clocked logic.
+zh-CN:
+  title: 组合逻辑中包含过程延时
+  cause: 组合过程使用了延时控制，但可综合组合硬件由逻辑关系决定，而不是由仿真时间延时决定。
+  risk: 工具可能忽略或改写该延时，导致仿真时序与综合后的电路不一致。
+  fix: 从可综合组合逻辑中删除延时；测试激励的时间控制放入 testbench，需要真实延迟时使用时钟逻辑建模。
+failing_example: failing/combinational-delay.sv
+fixed_example: fixed/combinational-delay.sv
+references: [https://verilator.org/guide/latest/warnings.html#combdly]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: COMBDLY
+    verification: container

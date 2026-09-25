@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: case-incomplete
+severity: warning
+en:
+  title: Case statement misses input values
+  cause: The case items do not cover every possible selector value and no default item handles the remainder.
+  risk: Unhandled values can retain stale data or propagate unknown values differently across simulation and hardware.
+  fix: Add explicit items for every valid value and a safe default for illegal or unknown values.
+zh-CN:
+  title: case 语句未覆盖全部取值
+  cause: 分支项没有覆盖选择信号的所有可能值，也没有 default 处理剩余情况。
+  risk: 未处理的取值可能保留旧数据，或使未知值在仿真与硬件中产生不同结果。
+  fix: 为所有合法取值添加明确分支，并用安全的 default 处理非法或未知取值。
+failing_example: failing/case-incomplete.sv
+fixed_example: fixed/case-incomplete.sv
+references: [https://verilator.org/guide/latest/warnings.html#caseincomplete]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: CASEINCOMPLETE
+    verification: container

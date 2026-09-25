@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: assignment-to-input
+severity: error
+en:
+  title: Module logic assigns to an input port
+  cause: Logic inside the module writes an input port even though that signal is owned and driven by the parent module.
+  risk: Competing ownership can create multiple drivers, obscure the true data source, and produce simulation or synthesis errors.
+  fix: Treat the input as read-only and write any transformed value to an internal signal or an output port instead.
+zh-CN:
+  title: 模块内部对输入端口进行了赋值
+  cause: 模块内部逻辑写入了输入端口，但该信号应由上层模块拥有并驱动。
+  risk: 信号所有权冲突可能造成多驱动、掩盖真实数据来源，并引发仿真或综合错误。
+  fix: 将输入端口视为只读，把转换后的值写入内部信号或输出端口。
+failing_example: failing/assignment-to-input.sv
+fixed_example: fixed/assignment-to-input.sv
+references: [https://verilator.org/guide/latest/warnings.html#assignin]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: ASSIGNIN
+    verification: container

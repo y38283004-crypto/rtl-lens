@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: ascending-range
+severity: warning
+en:
+  title: Packed vector uses an ascending bit range
+  cause: A packed vector is declared with an ascending range such as [0:7], which is often an accidental reversal of the usual most-significant-to-least-significant order.
+  risk: Connections to descending ranges can reverse bit positions and silently change numeric or protocol interpretation.
+  fix: Standardize on descending [msb:lsb] ranges, or document the required ascending convention and convert bit order explicitly at boundaries.
+zh-CN:
+  title: 打包向量使用了升序位范围
+  cause: 打包向量采用了类似 [0:7] 的升序范围，这通常是把常用的高位到低位顺序意外写反。
+  risk: 与降序范围连接时可能颠倒位位置，并静默改变数值含义或协议字段解释。
+  fix: 统一使用降序 [msb:lsb] 范围；若协议必须升序，请明确记录约定并在边界显式转换位顺序。
+failing_example: failing/ascending-range.sv
+fixed_example: fixed/ascending-range.sv
+references: [https://verilator.org/guide/latest/warnings.html#ascrange]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: ASCRANGE
+    verification: container

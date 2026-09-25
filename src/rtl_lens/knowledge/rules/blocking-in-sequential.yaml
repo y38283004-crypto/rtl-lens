@@ -1,0 +1,21 @@
+schema_version: "1.0"
+rule_id: blocking-in-sequential
+severity: warning
+en:
+  title: Blocking assignment appears in sequential logic
+  cause: A clocked process updates state with a blocking assignment, so later statements can observe the new value during the same simulation event.
+  risk: Statement ordering can introduce simulator races and make the modeled register behavior differ from the intended synchronous hardware.
+  fix: Use nonblocking assignments for registered state and calculate combinational next-state values separately when intermediate results are needed.
+zh-CN:
+  title: 时序逻辑中使用了阻塞赋值
+  cause: 时钟触发过程使用阻塞赋值更新状态，导致后续语句可能在同一仿真事件中立即看到新值。
+  risk: 语句顺序可能引入仿真竞争，使寄存器模型与预期同步硬件行为不一致。
+  fix: 对寄存状态使用非阻塞赋值；需要中间计算时，将组合的下一状态逻辑单独写出。
+failing_example: failing/blocking-in-sequential.sv
+fixed_example: fixed/blocking-in-sequential.sv
+references: [https://verilator.org/guide/latest/warnings.html#blkseq]
+review_status: reviewed
+engine_mappings:
+  - engine: verilator
+    code: BLKSEQ
+    verification: container
