@@ -18,21 +18,21 @@ from typing import cast
 
 import pyslang
 from pydantic import BaseModel, ConfigDict
-from pyslang import (  # type: ignore[attr-defined]
+from pyslang import (
     Bag,
     Diagnostic,
     DiagnosticEngine,
     DiagnosticSeverity,
     SourceManager,
 )
-from pyslang.ast import (  # type: ignore[import-not-found]
+from pyslang.ast import (
     Compilation,
     CompilationOptions,
     DefinitionKind,
     DefinitionSymbol,
 )
-from pyslang.parsing import PreprocessorOptions  # type: ignore[import-not-found]
-from pyslang.syntax import SyntaxTree  # type: ignore[import-not-found]
+from pyslang.parsing import PreprocessorOptions
+from pyslang.syntax import SyntaxTree
 
 from rtl_lens.analysis.module_graph import build_module_graph
 from rtl_lens.models.analysis import AnalysisWarning, ModuleGraph

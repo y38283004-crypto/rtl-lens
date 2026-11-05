@@ -9,11 +9,11 @@ ROOT = Path(__file__).parents[2]
 CI_PATH = ROOT / ".github" / "workflows" / "ci.yml"
 ACTION_SMOKE_PATH = ROOT / ".github" / "workflows" / "action-smoke.yml"
 DEPENDABOT_PATH = ROOT / ".github" / "dependabot.yml"
-ACTION_PINS = {
-    "actions/checkout": ("3d3c42e5aac5ba805825da76410c181273ba90b1", "v7"),
-    "actions/setup-python": ("5fda3b95a4ea91299a34e894583c3862153e4b97", "v7"),
-    "astral-sh/setup-uv": ("20cfd1bf945f4377ade1205e4dbc17946fc9a30d", "v10.0.1"),
-    "actions/upload-artifact": ("043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", "v7"),
+ALLOWED_ACTIONS = {
+    "actions/checkout",
+    "actions/setup-python",
+    "astral-sh/setup-uv",
+    "actions/upload-artifact",
 }
 
 
@@ -37,7 +37,8 @@ def test_ci_has_read_only_permissions_and_complete_native_matrix() -> None:
 
 
 def test_workflows_pin_every_external_action_with_same_line_release_comments() -> None:
-    for path in (CI_PATH, ACTION_SMOKE_PATH):
+    pins: dict[str, str] = {}
+    for path in (CI_PATH, ACTION_SMOKE_PATH, ROOT / ".github/workflows/release-check.yml"):
         workflow = _load(path)
         raw = path.read_text(encoding="utf-8")
         assert workflow["permissions"] == {"contents": "read"}
@@ -53,15 +54,18 @@ def test_workflows_pin_every_external_action_with_same_line_release_comments() -
                     continue
                 assert re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", uses)
                 action, commit = uses.split("@", maxsplit=1)
-                assert ACTION_PINS[action][0] == commit
+                assert action in ALLOWED_ACTIONS
+                assert pins.setdefault(action, commit) == commit
+                pattern = rf"uses:\s*{re.escape(uses)}\s+#\s+v\d+(?:\.\d+){{0,2}}\s*$"
+                assert re.search(pattern, raw, re.MULTILINE)
                 if action == "actions/checkout":
                     assert step["with"]["persist-credentials"] == "false"
 
-        for action, (commit, release) in ACTION_PINS.items():
-            if f"{action}@" not in raw:
-                continue
-            pattern = rf"uses:\s*{re.escape(action)}@{commit}\s+#\s+{re.escape(release)}\s*$"
-            assert re.search(pattern, raw, re.MULTILINE)
+    action = yaml.safe_load((ROOT / "action.yml").read_text(encoding="utf-8"))
+    for step in action["runs"]["steps"]:
+        if "uses" in step:
+            name, commit = step["uses"].split("@", maxsplit=1)
+            assert pins[name] == commit
 
 
 def test_ci_jobs_enforce_lock_quality_browser_package_and_container_contracts() -> None:

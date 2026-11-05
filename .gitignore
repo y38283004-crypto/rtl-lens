@@ -8,6 +8,7 @@ rtl-lens-reports/
 __pycache__/
 .pytest_cache/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 .mypy_cache/

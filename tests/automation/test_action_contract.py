@@ -12,7 +12,6 @@ import yaml
 ROOT = Path(__file__).parents[2]
 ACTION_PATH = ROOT / "action.yml"
 ENTRYPOINT = ROOT / "scripts" / "action-entrypoint.sh"
-UPLOAD_ARTIFACT = "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
 
 
 def test_action_metadata_has_stable_inputs_outputs_and_composite_runtime() -> None:
@@ -40,7 +39,9 @@ def test_action_metadata_has_stable_inputs_outputs_and_composite_runtime() -> No
 def test_action_upload_is_exact_opt_in_and_uses_a_full_commit_pin() -> None:
     action = yaml.safe_load(ACTION_PATH.read_text(encoding="utf-8"))
     steps = action["runs"]["steps"]
-    upload = next(step for step in steps if step.get("uses") == UPLOAD_ARTIFACT)
+    upload = next(
+        step for step in steps if step.get("uses", "").startswith("actions/upload-artifact@")
+    )
     propagate = steps[-1]
 
     assert "always()" in upload["if"]

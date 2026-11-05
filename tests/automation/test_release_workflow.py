@@ -7,12 +7,6 @@ import yaml
 
 ROOT = Path(__file__).parents[2]
 WORKFLOW = ROOT / ".github/workflows/release-check.yml"
-ACTION_PINS = {
-    "actions/checkout": ("3d3c42e5aac5ba805825da76410c181273ba90b1", "v7"),
-    "actions/setup-python": ("5fda3b95a4ea91299a34e894583c3862153e4b97", "v7"),
-    "astral-sh/setup-uv": ("20cfd1bf945f4377ade1205e4dbc17946fc9a30d", "v10.0.1"),
-    "actions/upload-artifact": ("043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", "v7"),
-}
 
 
 def _load() -> dict:
@@ -25,7 +19,7 @@ def test_release_checks_have_only_read_only_unprivileged_triggers() -> None:
     assert workflow["permissions"] == {"contents": "read"}
     assert workflow["on"] == {
         "pull_request": "",
-        "push": {"branches": ["master"]},
+        "push": {"branches": ["main"]},
         "workflow_dispatch": "",
     }
     assert len(workflow["jobs"]) == 1
@@ -59,13 +53,17 @@ def test_release_checks_pin_actions_and_limit_uploaded_files() -> None:
     workflow = _load()
     steps = next(iter(workflow["jobs"].values()))["steps"]
     actions = [step for step in steps if "uses" in step]
-    assert [step["uses"] for step in actions] == [
-        f"{name}@{sha}" for name, (sha, _) in ACTION_PINS.items()
+    assert [step["uses"].split("@")[0] for step in actions] == [
+        "actions/checkout",
+        "actions/setup-python",
+        "astral-sh/setup-uv",
+        "actions/upload-artifact",
     ]
     text = WORKFLOW.read_text(encoding="utf-8")
-    for name, (sha, comment) in ACTION_PINS.items():
+    for step in actions:
+        assert re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", step["uses"])
         assert re.search(
-            rf"uses: {re.escape(name)}@{sha} # {re.escape(comment)}$", text, re.MULTILINE
+            rf"uses: {re.escape(step['uses'])} # v\d+(?:\.\d+){{0,2}}$", text, re.MULTILINE
         )
     assert actions[0]["with"] == {"persist-credentials": "false"}
     assert actions[1]["with"] == {"python-version": "3.12"}
