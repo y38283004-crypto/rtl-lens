@@ -33,3 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preserve LF line endings for generated rule guides on Windows checkouts.
 - Isolate invalid upstream PySlang 11 Linux stubs from strict project type checks.
 - Run release checks on the public `main` branch and ignore coverage worker files.
+- Read Verilator's unnamed located errors and count-checked exit summaries without
+  discarding valid findings; keep unlocated unexplained errors as engine failures.
+- Translate GNU realpath flags in the macOS Action test harness while retaining
+  actual filesystem and symlink resolution.

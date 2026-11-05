@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -150,7 +151,7 @@ def test_entrypoint_functionally_preserves_exit_and_report_format(
     )
 
     assert result["returncode"] == 0, result["stderr"]
-    assert _output_value(result["outputs"], "scan-exit-code") == str(scan_exit), result
+    assert _output_value(result["outputs"], "scan-exit-code") == str(scan_exit), result["stderr"]
     assert {path.name for path in result["report_dir"].glob("report.*")} == expected_reports
     assert {Path(path).name for path in _output_paths(result["outputs"])} == expected_reports
     assert "ARG=--network=none" in result["docker_log"]
@@ -251,6 +252,16 @@ def _run_entrypoint(
     fake_bin = tmp_path / "fake-bin"
     fake_bin.mkdir()
     _write_executable(fake_bin / "uname", "#!/usr/bin/env bash\nprintf 'Linux\\n'\n")
+    if sys.platform == "darwin":
+        # The Action supports Linux; these tests simulate its host. Apple's
+        # realpath already requires existing paths, but rejects GNU's -e flag.
+        # Translate only the flags and keep real filesystem/symlink resolution.
+        _write_executable(
+            fake_bin / "realpath",
+            "#!/usr/bin/env bash\n"
+            "[[ $# == 3 && $1 == -e && $2 == -- ]] || exit 64\n"
+            'exec /bin/realpath "$3"\n',
+        )
     _write_executable(
         fake_bin / "docker",
         """#!/usr/bin/env bash

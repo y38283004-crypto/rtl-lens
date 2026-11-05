@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 from collections.abc import Mapping
 from pathlib import Path, PureWindowsPath
 from typing import NoReturn
@@ -50,6 +51,7 @@ def parse_verilator_sarif(
             _malformed(f"runs[{run_index}].tool.driver.name must be Verilator")
         engine_version = _string(driver, "version")
         results = _list(run, "results")
+        run_start = len(diagnostics)
 
         for result_index, result_value in enumerate(results):
             if len(diagnostics) == _DIAGNOSTIC_LIMIT:
@@ -59,11 +61,25 @@ def parse_verilator_sarif(
                 )
             field = f"runs[{run_index}].results[{result_index}]"
             result = _mapping(result_value, field)
-            rule_id = _string(result, "ruleId")
             level = _string(result, "level")
+            severity = _severity(level)
+            rule_id = _string(result, "ruleId") if "ruleId" in result else None
             message = _mapping(_required(result, "message"), f"{field}.message")
             message_text = _bounded_message(_string(message, "text"))
-            locations = _list(result, "locations")
+            locations = _list(result, "locations") if "locations" in result else []
+            if rule_id is None and not locations:
+                # Native 5.040 includes general information and fatal exit
+                # summaries in results without a rule ID or source location.
+                if severity is Severity.INFO:
+                    continue
+                if severity is Severity.ERROR and _is_exit_summary(
+                    message_text, diagnostics[run_start:]
+                ):
+                    continue
+                raise SarifAdapterError(
+                    "unlocated_diagnostic",
+                    f"Verilator emitted an unlocated {level}: {message_text}",
+                )
             if not locations:
                 _malformed(f"{field}.locations must contain a physical location")
             location = _mapping(locations[0], f"{field}.locations[0]")
@@ -87,8 +103,8 @@ def parse_verilator_sarif(
                 RawDiagnostic(
                     engine="verilator",
                     engine_version=engine_version,
-                    original_code=rule_id,
-                    severity=_severity(level),
+                    original_code=rule_id if rule_id is not None else "UNNAMED",
+                    severity=severity,
                     location=SourceLocation(
                         path=relative_path,
                         line=_positive_int(region, "startLine"),
@@ -98,6 +114,22 @@ def parse_verilator_sarif(
                 )
             )
     return tuple(diagnostics)
+
+
+def _is_exit_summary(message: str, diagnostics: list[RawDiagnostic]) -> bool:
+    match = re.fullmatch(
+        r"Exiting due to (?:(\d+) error\(s\)(?:, (\d+) warning\(s\))?|(\d+) warning\(s\))",
+        message,
+    )
+    if match is None:
+        return False
+    errors = int(match[1] or 0)
+    warnings = int(match[2] or match[3] or 0)
+    return (
+        errors + warnings > 0
+        and errors == sum(item.severity is Severity.ERROR for item in diagnostics)
+        and warnings == sum(item.severity is Severity.WARNING for item in diagnostics)
+    )
 
 
 def _mapping(value: object, field: str) -> Mapping[str, object]:
