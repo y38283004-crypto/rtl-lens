@@ -1,6 +1,6 @@
 # Getting started
 
-RTL Lens is a source-checkout, pre-release tool. Install uv 0.12.7 and run
+RTL Lens is a source-checkout, pre-release tool. Install uv 0.13.7 and run
 `uv sync --locked --all-groups` from the repository root. Invoke the installed local command as
 `uv run rtl-lens ...`; it is not a PyPI installation workflow.
 

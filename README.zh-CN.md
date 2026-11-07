@@ -7,7 +7,7 @@
 
 ## 安装
 
-RTL Lens 从源代码检出安装，未在 PyPI 提供。先安装 [uv 0.12.7](https://docs.astral.sh/uv/)，
+RTL Lens 从源代码检出安装，未在 PyPI 提供。先安装 [uv 0.13.7](https://docs.astral.sh/uv/)，
 然后在仓库根目录运行：
 
 ```powershell

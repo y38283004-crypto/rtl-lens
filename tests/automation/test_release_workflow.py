@@ -68,7 +68,7 @@ def test_release_checks_pin_actions_and_limit_uploaded_files() -> None:
     assert actions[0]["with"] == {"persist-credentials": "false"}
     assert actions[1]["with"] == {"python-version": "3.12"}
     assert actions[2]["with"] == {
-        "version": "0.12.7",
+        "version": "0.13.7",
         "enable-cache": "true",
         "cache-dependency-glob": "uv.lock",
     }

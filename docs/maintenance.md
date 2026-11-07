@@ -12,6 +12,13 @@ information, and CI health. During repository setup, maintainers should enable
 GitHub private vulnerability reporting and verify that Security → Advisories →
 Report a vulnerability is available for both security and private conduct intake.
 
+CI and container builds pin uv 0.13.7; source checkouts accept compatible 0.13
+patch releases. Review uv and `uv_build` together for a minor-version upgrade.
+If Dependabot reports `tool_version_not_supported`, check its supported tool
+version, update the coordinated pins and bounds, and rerun locked package,
+installed-artifact, and platform checks before merging. Do not refresh unrelated
+dependency versions merely to update the build tool.
+
 The following are proposed triage labels for repository setup; their inclusion
 here does not claim that labels already exist: `bug`, `false-positive`,
 `rule-request`, `enhancement`, `documentation`, `translation`, `security`, and
