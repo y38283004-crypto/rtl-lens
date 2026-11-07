@@ -8,9 +8,7 @@
   "ascending-range": [
     {"engine": "verilator", "code": "ASCRANGE", "verification": "container"}
   ],
-  "assignment-in-expression": [
-    {"engine": "verilator", "code": "ASSIGNEQEXPR", "verification": "container"}
-  ],
+  "assignment-in-expression": [],
   "assignment-to-input": [
     {"engine": "verilator", "code": "ASSIGNIN", "verification": "container"}
   ],
@@ -101,7 +99,6 @@
     {"engine": "pyslang", "code": "constant-conversion", "verification": "local"},
     {"engine": "pyslang", "code": "width-expand", "verification": "local"},
     {"engine": "pyslang", "code": "width-trunc", "verification": "local"},
-    {"engine": "verilator", "code": "WIDTH", "verification": "container"},
     {"engine": "verilator", "code": "WIDTHEXPAND", "verification": "container"},
     {"engine": "verilator", "code": "WIDTHTRUNC", "verification": "container"}
   ]

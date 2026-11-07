@@ -1,0 +1,16 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Verilator",
+          "version": "5.040 2025-08-30 rev v5.040",
+          "rules": []
+        }
+      }
+      "invocations": [{"executionSuccessful": true}],
+      "results": []
+    }
+  ]
+}

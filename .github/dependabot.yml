@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Keep the build backend on the supported uv 0.12 line; upgrade together.
+    ignore:
+      - dependency-name: uv-build
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
 
   - package-ecosystem: docker
     directory: "/"

@@ -13,6 +13,7 @@ from rtl_lens.engines.pyslang_engine import PySlangEngine
 from rtl_lens.engines.verilator_engine import VerilatorEngine
 from rtl_lens.knowledge.schema import ExplanationEntry
 from rtl_lens.knowledge.store import KnowledgeStore
+from rtl_lens.models.engine import EngineState
 
 requires_verilator = pytest.mark.skipif(
     shutil.which("verilator") is None,
@@ -62,6 +63,8 @@ def test_verilator_mapping_is_emitted_only_by_the_failing_example(
 ) -> None:
     failing = run_example(entry, "failing", tmp_path / "failing", VerilatorEngine())
     fixed = run_example(entry, "fixed", tmp_path / "fixed", VerilatorEngine())
+    assert failing.state is EngineState.COMPLETED, failing.failure
+    assert fixed.state is EngineState.COMPLETED, fixed.failure
     expected = {mapping.code for mapping in entry.engine_mappings if mapping.engine == "verilator"}
 
     assert expected <= {diagnostic.original_code for diagnostic in failing.diagnostics}

@@ -29,7 +29,7 @@ def _sarif_payload(arguments: list[str], source: str) -> dict[str, object]:
                 "tool": {"driver": {"name": "Verilator", "version": "5.040-fake"}},
                 "results": [
                     {
-                        "ruleId": "WIDTH",
+                        "ruleId": "WIDTHTRUNC",
                         "level": "warning",
                         "message": {"text": json.dumps(arguments)},
                         "locations": [

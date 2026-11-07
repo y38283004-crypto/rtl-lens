@@ -68,7 +68,6 @@ endmodule
 - `pyslang:constant-conversion` — `local` verification
 - `pyslang:width-expand` — `local` verification
 - `pyslang:width-trunc` — `local` verification
-- `verilator:WIDTH` — `container` verification
 - `verilator:WIDTHEXPAND` — `container` verification
 - `verilator:WIDTHTRUNC` — `container` verification
 

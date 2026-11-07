@@ -33,7 +33,7 @@ def _raw(
 
 def test_two_engines_merge_same_fixture_proven_width_issue() -> None:
     slang = _raw("pyslang", "constant-conversion")
-    verilator = _raw("verilator", "WIDTH")
+    verilator = _raw("verilator", "WIDTHTRUNC")
 
     merged = merge_findings([canonicalize(slang), canonicalize(verilator)])
 
@@ -46,7 +46,7 @@ def test_two_engines_merge_same_fixture_proven_width_issue() -> None:
 
 
 def test_known_findings_with_different_symbols_do_not_merge() -> None:
-    lhs = canonicalize(_raw("verilator", "WIDTH", symbol="lhs"))
+    lhs = canonicalize(_raw("verilator", "WIDTHTRUNC", symbol="lhs"))
     rhs = canonicalize(_raw("pyslang", "constant-conversion", symbol="rhs"))
 
     assert len(merge_findings([lhs, rhs])) == 2
@@ -67,7 +67,7 @@ def test_unknown_findings_with_different_messages_do_not_merge() -> None:
 
 
 def test_merge_deduplicates_only_identical_native_provenance() -> None:
-    raw = _raw("verilator", "WIDTH")
+    raw = _raw("verilator", "WIDTHTRUNC")
     finding = canonicalize(raw)
 
     merged = merge_findings([finding, finding])
@@ -80,7 +80,7 @@ def test_merge_chooses_stable_representative_values_and_preserves_native_data() 
     warning = canonicalize(
         _raw(
             "verilator",
-            "WIDTH",
+            "WIDTHTRUNC",
             message="zeta wording",
             severity=Severity.WARNING,
         )
@@ -114,8 +114,12 @@ def test_merge_sorts_by_severity_path_location_and_fingerprint() -> None:
     findings = (
         canonicalize(_raw("verilator", "LATCH", path="z.sv", line=9, severity=Severity.INFO)),
         canonicalize(_raw("verilator", "UNDRIVEN", path="b.sv", line=5, severity=Severity.ERROR)),
-        canonicalize(_raw("verilator", "WIDTH", path="a.sv", line=8, severity=Severity.WARNING)),
-        canonicalize(_raw("verilator", "WIDTH", path="a.sv", line=2, severity=Severity.WARNING)),
+        canonicalize(
+            _raw("verilator", "WIDTHTRUNC", path="a.sv", line=8, severity=Severity.WARNING)
+        ),
+        canonicalize(
+            _raw("verilator", "WIDTHTRUNC", path="a.sv", line=2, severity=Severity.WARNING)
+        ),
     )
 
     merged = merge_findings(reversed(findings))
@@ -136,7 +140,7 @@ def test_merge_sorts_by_severity_path_location_and_fingerprint() -> None:
 
 def test_merge_json_is_identical_for_every_input_order() -> None:
     findings = (
-        canonicalize(_raw("verilator", "WIDTH", message="verilator wording")),
+        canonicalize(_raw("verilator", "WIDTHTRUNC", message="verilator wording")),
         canonicalize(_raw("pyslang", "constant-conversion", message="pyslang wording")),
         canonicalize(_raw("verilator", "LATCH", path="rtl/control.sv")),
     )
@@ -150,7 +154,7 @@ def test_merge_json_is_identical_for_every_input_order() -> None:
 
 
 def test_merge_json_is_identical_when_optional_provenance_values_are_none_or_empty() -> None:
-    finding = canonicalize(_raw("verilator", "WIDTH"))
+    finding = canonicalize(_raw("verilator", "WIDTHTRUNC"))
     native = finding.provenance[0]
     none_values = native.model_copy(
         update={"engine_version": None, "symbol": None, "source_snippet": None}
@@ -172,7 +176,7 @@ def test_merge_accepts_empty_iterable() -> None:
 
 
 def test_merge_does_not_mutate_frozen_input() -> None:
-    finding = canonicalize(_raw("verilator", "WIDTH"))
+    finding = canonicalize(_raw("verilator", "WIDTHTRUNC"))
     before = finding.model_dump_json()
 
     merge_findings([finding, finding])

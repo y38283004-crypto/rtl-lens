@@ -34,10 +34,10 @@ def test_parse_verilator_width_sarif(tmp_path: Path) -> None:
     assert len(diagnostics) == 1
     assert diagnostics[0].engine == "verilator"
     assert diagnostics[0].engine_version == "5.040"
-    assert diagnostics[0].original_code == "WIDTH"
+    assert diagnostics[0].original_code == "WIDTHTRUNC"
     assert diagnostics[0].severity is Severity.WARNING
     assert diagnostics[0].location == SourceLocation(path="rtl/top.sv", line=8, column=5)
-    assert diagnostics[0].message.startswith("Operator ASSIGN expects 8 bits")
+    assert diagnostics[0].message.startswith("Operator ASSIGN expects 4 bits")
 
 
 @pytest.mark.parametrize(
@@ -49,7 +49,6 @@ def test_parse_verilator_width_sarif(tmp_path: Path) -> None:
         (lambda payload: payload["runs"][0]["tool"].pop("driver"), "driver"),
         (lambda payload: payload["runs"][0]["tool"]["driver"].pop("version"), "version"),
         (lambda payload: payload["runs"][0].pop("results"), "results"),
-        (lambda payload: payload["runs"][0]["results"][0].pop("ruleId"), "ruleId"),
         (lambda payload: payload["runs"][0]["results"][0].pop("level"), "level"),
         (lambda payload: payload["runs"][0]["results"][0].pop("message"), "message"),
         (lambda payload: payload["runs"][0]["results"][0].pop("locations"), "locations"),
@@ -80,6 +79,96 @@ def test_parse_rejects_wrong_typed_sarif_payloads(tmp_path: Path, value: object)
         parse_verilator_sarif(value, tmp_path)  # type: ignore[arg-type]
 
     assert captured.value.kind == "malformed_sarif"
+
+
+def test_parse_keeps_rule_diagnostic_when_verilator_appends_exit_summary(tmp_path: Path) -> None:
+    """Verilator 5.040 emits an unlocated, unnamed fatal summary after warnings."""
+    payload = _fixture_payload()
+    payload["runs"][0]["results"].append(
+        {"level": "error", "message": {"text": "Exiting due to 1 warning(s)"}}
+    )
+
+    diagnostics = parse_verilator_sarif(payload, tmp_path)
+
+    assert len(diagnostics) == 1
+    assert diagnostics[0].original_code == "WIDTHTRUNC"
+    assert diagnostics[0].severity is Severity.WARNING
+
+
+def test_parse_ignores_unlocated_information_without_inventing_a_source(tmp_path: Path) -> None:
+    payload = _fixture_payload()
+    payload["runs"][0]["results"] = [{"level": "none", "message": {"text": "Verilation completed"}}]
+
+    assert parse_verilator_sarif(payload, tmp_path) == ()
+
+
+def test_parse_preserves_unnamed_located_syntax_error(tmp_path: Path) -> None:
+    payload = _fixture_payload()
+    result = payload["runs"][0]["results"][0]
+    result.pop("ruleId")
+    result["level"] = "error"
+    result["message"]["text"] = "syntax error, unexpected endmodule"
+
+    diagnostics = parse_verilator_sarif(payload, tmp_path)
+
+    assert len(diagnostics) == 1
+    assert diagnostics[0].original_code == "UNNAMED"
+    assert diagnostics[0].severity is Severity.ERROR
+    assert diagnostics[0].location == SourceLocation(path="rtl/top.sv", line=8, column=5)
+    assert diagnostics[0].message == "syntax error, unexpected endmodule"
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["Cannot open input file", "Exiting due to 1 error(s)", "Exiting due to 2 warning(s)"],
+)
+def test_parse_does_not_hide_unlocated_errors_or_unexplained_exit_counts(
+    tmp_path: Path, message: str
+) -> None:
+    payload = _fixture_payload()
+    payload["runs"][0]["results"].append({"level": "error", "message": {"text": message}})
+
+    with pytest.raises(SarifAdapterError) as captured:
+        parse_verilator_sarif(payload, tmp_path)
+
+    assert captured.value.kind == "unlocated_diagnostic"
+
+
+def test_parse_rejects_empty_rule_id_instead_of_treating_it_as_unnamed(tmp_path: Path) -> None:
+    payload = _fixture_payload()
+    payload["runs"][0]["results"][0]["ruleId"] = ""
+
+    with pytest.raises(SarifAdapterError, match="ruleId"):
+        parse_verilator_sarif(payload, tmp_path)
+
+
+@pytest.mark.parametrize("locations", [None, 0, "", {}])
+def test_parse_validates_optional_locations_even_on_information(
+    tmp_path: Path, locations: object
+) -> None:
+    payload = _fixture_payload()
+    payload["runs"][0]["results"] = [
+        {"level": "none", "message": {"text": "Information"}, "locations": locations}
+    ]
+
+    with pytest.raises(SarifAdapterError, match="locations"):
+        parse_verilator_sarif(payload, tmp_path)
+
+
+def test_parse_accepts_exit_summary_with_matching_error_and_warning_counts(tmp_path: Path) -> None:
+    payload = _fixture_payload()
+    results = payload["runs"][0]["results"]
+    error = deepcopy(results[0])
+    error["ruleId"] = "ASSIGNIN"
+    error["level"] = "error"
+    results.extend(
+        [error, {"level": "error", "message": {"text": "Exiting due to 1 error(s), 1 warning(s)"}}]
+    )
+
+    diagnostics = parse_verilator_sarif(payload, tmp_path)
+
+    assert [item.original_code for item in diagnostics] == ["WIDTHTRUNC", "ASSIGNIN"]
+    assert [item.severity for item in diagnostics] == [Severity.WARNING, Severity.ERROR]
 
 
 @pytest.mark.parametrize(

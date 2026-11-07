@@ -19,6 +19,9 @@ from rtl_lens.models.project import ResolvedProject
 
 FAKE_VERILATOR = Path(__file__).parents[1] / "fixtures" / "bin" / "fake_verilator.py"
 NATIVE_FAKE_SOURCE = Path(__file__).parents[1] / "fixtures" / "bin" / "fake_verilator.c"
+EMPTY_RULES_SARIF = (
+    Path(__file__).parents[1] / "fixtures" / "sarif" / "verilator-empty-rules.sarif.json"
+)
 
 
 def _project(root: Path, *, mode: str = "ok") -> ResolvedProject:
@@ -212,7 +215,40 @@ def test_nonzero_exit_with_valid_sarif_is_completed_analysis(tmp_path: Path) -> 
 
     assert result.state is EngineState.COMPLETED
     assert result.failure is None
-    assert result.diagnostics[0].original_code == "WIDTH"
+    assert result.diagnostics[0].original_code == "WIDTHTRUNC"
+
+
+def test_read_native_empty_rules_report_without_discarding_clean_analysis(tmp_path: Path) -> None:
+    """V3OutJsonFile 5.040 omits the comma after an empty rules/tool object."""
+    from rtl_lens.engines.sarif import parse_verilator_sarif
+
+    payload = verilator_engine._read_sarif(EMPTY_RULES_SARIF)
+
+    assert parse_verilator_sarif(payload, tmp_path) == ()
+
+
+@pytest.mark.parametrize(
+    ("before", "after"),
+    [
+        ('"Verilator"', '"OtherTool"'),
+        ("5.040 2025-08-30 rev v5.040", "5.042"),
+        ("5.040 2025-08-30 rev v5.040", "OtherVersion"),
+        ('"rules": []', '"rules": [{"id": "WIDTHTRUNC"}]'),
+        ('"invocations":', '"unexpected":'),
+        ("true}],", "true}]"),
+    ],
+)
+def test_empty_rule_workaround_does_not_accept_other_malformed_reports(
+    tmp_path: Path, before: str, after: str
+) -> None:
+    raw = EMPTY_RULES_SARIF.read_text(encoding="utf-8").replace(before, after)
+    report = tmp_path / "report.sarif"
+    report.write_text(raw, encoding="utf-8")
+
+    with pytest.raises(verilator_engine._AdapterFailure) as captured:
+        verilator_engine._read_sarif(report)
+
+    assert captured.value.kind == "malformed_sarif"
 
 
 @pytest.mark.parametrize(

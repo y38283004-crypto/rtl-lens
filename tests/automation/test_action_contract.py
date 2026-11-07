@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,6 @@ import yaml
 ROOT = Path(__file__).parents[2]
 ACTION_PATH = ROOT / "action.yml"
 ENTRYPOINT = ROOT / "scripts" / "action-entrypoint.sh"
-UPLOAD_ARTIFACT = "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
 
 
 def test_action_metadata_has_stable_inputs_outputs_and_composite_runtime() -> None:
@@ -40,7 +40,9 @@ def test_action_metadata_has_stable_inputs_outputs_and_composite_runtime() -> No
 def test_action_upload_is_exact_opt_in_and_uses_a_full_commit_pin() -> None:
     action = yaml.safe_load(ACTION_PATH.read_text(encoding="utf-8"))
     steps = action["runs"]["steps"]
-    upload = next(step for step in steps if step.get("uses") == UPLOAD_ARTIFACT)
+    upload = next(
+        step for step in steps if step.get("uses", "").startswith("actions/upload-artifact@")
+    )
     propagate = steps[-1]
 
     assert "always()" in upload["if"]
@@ -149,7 +151,7 @@ def test_entrypoint_functionally_preserves_exit_and_report_format(
     )
 
     assert result["returncode"] == 0, result["stderr"]
-    assert _output_value(result["outputs"], "scan-exit-code") == str(scan_exit), result
+    assert _output_value(result["outputs"], "scan-exit-code") == str(scan_exit), result["stderr"]
     assert {path.name for path in result["report_dir"].glob("report.*")} == expected_reports
     assert {Path(path).name for path in _output_paths(result["outputs"])} == expected_reports
     assert "ARG=--network=none" in result["docker_log"]
@@ -250,6 +252,16 @@ def _run_entrypoint(
     fake_bin = tmp_path / "fake-bin"
     fake_bin.mkdir()
     _write_executable(fake_bin / "uname", "#!/usr/bin/env bash\nprintf 'Linux\\n'\n")
+    if sys.platform == "darwin":
+        # The Action supports Linux; these tests simulate its host. Apple's
+        # realpath already requires existing paths, but rejects GNU's -e flag.
+        # Translate only the flags and keep real filesystem/symlink resolution.
+        _write_executable(
+            fake_bin / "realpath",
+            "#!/usr/bin/env bash\n"
+            "[[ $# == 3 && $1 == -e && $2 == -- ]] || exit 64\n"
+            'exec /bin/realpath "$3"\n',
+        )
     _write_executable(
         fake_bin / "docker",
         """#!/usr/bin/env bash

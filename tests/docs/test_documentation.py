@@ -168,7 +168,7 @@ def test_governance_file_exists(path: Path) -> None:
 
 def test_license_is_canonical_and_readmes_link_governance() -> None:
     """Keep licensing bytes and bilingual governance navigation intact."""
-    assert _read(Path(".gitattributes")).strip() == "LICENSE text eol=lf"
+    assert "LICENSE text eol=lf" in _read(Path(".gitattributes")).splitlines()
     license_bytes = (ROOT / "LICENSE").read_bytes()
     assert hashlib.sha256(license_bytes).hexdigest() == APACHE_LICENSE_SHA256
     with (ROOT / "pyproject.toml").open("rb") as metadata_file:

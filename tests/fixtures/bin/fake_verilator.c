@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     fputs(
         "{\"version\":\"2.1.0\",\"runs\":[{\"tool\":{\"driver\":{"
         "\"name\":\"Verilator\",\"version\":\"5.040-native-fake\"}},"
-        "\"results\":[{\"ruleId\":\"WIDTH\",\"level\":\"warning\","
+        "\"results\":[{\"ruleId\":\"WIDTHTRUNC\",\"level\":\"warning\","
         "\"message\":{\"text\":\"native wrapper invoked\"},\"locations\":[{"
         "\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"rtl/top.sv\"},"
         "\"region\":{\"startLine\":1,\"startColumn\":1}}}]}]}]}",

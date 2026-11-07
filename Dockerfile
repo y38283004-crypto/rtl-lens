@@ -31,7 +31,7 @@ RUN git clone --filter=blob:none --no-checkout https://github.com/verilator/veri
 FROM ${PYTHON_IMAGE} AS package-build
 ARG UV_VERSION=0.12.7
 WORKDIR /opt/rtl-lens
-COPY README.md pyproject.toml uv.lock ./
+COPY LICENSE README.md pyproject.toml uv.lock ./
 COPY src ./src
 RUN python -m pip install --no-cache-dir "uv==$UV_VERSION" \
     && uv build --no-sources --out-dir /dist \
@@ -66,7 +66,8 @@ CMD ["--help"]
 
 FROM runtime AS test
 USER root
-RUN python -m pip install --no-cache-dir "pytest>=8.4,<9"
+RUN python -m ensurepip \
+    && python -m pip install --no-cache-dir "pytest>=8.4,<9"
 WORKDIR /app
 COPY tests/knowledge ./tests/knowledge
 COPY tests/fixtures/rules ./tests/fixtures/rules
