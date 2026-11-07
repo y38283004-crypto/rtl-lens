@@ -34,10 +34,10 @@ def test_parse_verilator_width_sarif(tmp_path: Path) -> None:
     assert len(diagnostics) == 1
     assert diagnostics[0].engine == "verilator"
     assert diagnostics[0].engine_version == "5.040"
-    assert diagnostics[0].original_code == "WIDTH"
+    assert diagnostics[0].original_code == "WIDTHTRUNC"
     assert diagnostics[0].severity is Severity.WARNING
     assert diagnostics[0].location == SourceLocation(path="rtl/top.sv", line=8, column=5)
-    assert diagnostics[0].message.startswith("Operator ASSIGN expects 8 bits")
+    assert diagnostics[0].message.startswith("Operator ASSIGN expects 4 bits")
 
 
 @pytest.mark.parametrize(
@@ -91,7 +91,7 @@ def test_parse_keeps_rule_diagnostic_when_verilator_appends_exit_summary(tmp_pat
     diagnostics = parse_verilator_sarif(payload, tmp_path)
 
     assert len(diagnostics) == 1
-    assert diagnostics[0].original_code == "WIDTH"
+    assert diagnostics[0].original_code == "WIDTHTRUNC"
     assert diagnostics[0].severity is Severity.WARNING
 
 
@@ -167,7 +167,7 @@ def test_parse_accepts_exit_summary_with_matching_error_and_warning_counts(tmp_p
 
     diagnostics = parse_verilator_sarif(payload, tmp_path)
 
-    assert [item.original_code for item in diagnostics] == ["WIDTH", "ASSIGNIN"]
+    assert [item.original_code for item in diagnostics] == ["WIDTHTRUNC", "ASSIGNIN"]
     assert [item.severity for item in diagnostics] == [Severity.WARNING, Severity.ERROR]
 
 

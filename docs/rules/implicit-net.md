@@ -35,7 +35,8 @@ Declare every signal explicitly and enable default_nettype none around project R
 
 ```systemverilog
 module implicit_net(input logic data_i, output logic data_o);
-  assign data_o = data_i & enable_typo;
+  assign enable_typo = data_i;
+  assign data_o = enable_typo;
 endmodule
 ```
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -223,11 +224,44 @@ def _read_sarif(sarif_path: Path) -> Mapping[str, object]:
         )
     try:
         payload = json.loads(content)
-    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+    except UnicodeDecodeError as error:
         raise _AdapterFailure("malformed_sarif", "Verilator produced malformed SARIF") from error
+    except json.JSONDecodeError as error:
+        payload = _read_empty_rules_json(error)
     if not isinstance(payload, Mapping):
         raise _AdapterFailure("malformed_sarif", "Verilator SARIF must be a JSON object")
     return cast(Mapping[str, object], payload)
+
+
+def _read_empty_rules_json(error: json.JSONDecodeError) -> object:
+    # V3OutJsonFile in the pinned producer leaves its comma state empty after
+    # driver.rules == []. Repair only that exact tool/invocations boundary,
+    # then require strict JSON and a single Verilator run with empty rules.
+    prefix = error.doc[max(0, error.pos - 512) : error.pos]
+    suffix = error.doc[error.pos : error.pos + 64]
+    if (
+        error.msg == "Expecting ',' delimiter"
+        and re.search(r'"rules"\s*:\s*\[\s*\]\s*\}\s*\}\s*$', prefix)
+        and re.match(r'"invocations"\s*:\s*\[', suffix)
+    ):
+        try:
+            payload = json.loads(error.doc[: error.pos] + "," + error.doc[error.pos :])
+        except json.JSONDecodeError:
+            payload = None
+        runs = payload.get("runs") if isinstance(payload, Mapping) else None
+        run = runs[0] if isinstance(runs, list) and len(runs) == 1 else None
+        tool = run.get("tool") if isinstance(run, Mapping) else None
+        driver = tool.get("driver") if isinstance(tool, Mapping) else None
+        version = driver.get("version") if isinstance(driver, Mapping) else None
+        if (
+            isinstance(driver, Mapping)
+            and driver.get("name") == "Verilator"
+            and isinstance(version, str)
+            and (version == "5.040" or version.startswith("5.040 "))
+            and driver.get("rules") == []
+        ):
+            return payload
+    raise _AdapterFailure("malformed_sarif", "Verilator produced malformed SARIF") from error
 
 
 def _run_bounded_process(

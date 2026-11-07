@@ -178,7 +178,7 @@ def test_completed_engine_findings_are_merged_enriched_and_block_when_new(
     verilator_diagnostic = RawDiagnostic(
         engine="verilator",
         engine_version="5.0",
-        original_code="WIDTH",
+        original_code="WIDTHTRUNC",
         severity=Severity.WARNING,
         location=location,
         message="operator width does not match",
@@ -400,7 +400,7 @@ def test_unsupported_language_outprioritizes_required_failure_and_new_error(
 ) -> None:
     diagnostic = RawDiagnostic(
         engine="verilator",
-        original_code="WIDTH",
+        original_code="WIDTHTRUNC",
         severity=Severity.ERROR,
         location=SourceLocation(path="top.sv", line=1, column=1),
         message="width differs",
@@ -438,7 +438,7 @@ def test_baseline_marks_same_error_existing_and_nonblocking(tmp_path: Path) -> N
     location = SourceLocation(path="top.sv", line=2, column=3)
     diagnostic = RawDiagnostic(
         engine="verilator",
-        original_code="WIDTH",
+        original_code="WIDTHTRUNC",
         severity=Severity.ERROR,
         location=location,
         message="width differs",
@@ -701,7 +701,7 @@ def test_unexpected_engine_exception_is_contained_and_later_engine_runs(tmp_path
 def test_required_failure_outprioritizes_new_error(tmp_path: Path) -> None:
     diagnostic = RawDiagnostic(
         engine="verilator",
-        original_code="WIDTH",
+        original_code="WIDTHTRUNC",
         severity=Severity.ERROR,
         location=SourceLocation(path="top.sv", line=1, column=1),
         message="width differs",
@@ -742,7 +742,7 @@ def test_redaction_and_injected_clock_are_reflected(tmp_path: Path) -> None:
     )
     diagnostic = RawDiagnostic(
         engine="verilator",
-        original_code="WIDTH",
+        original_code="WIDTHTRUNC",
         severity=Severity.WARNING,
         location=SourceLocation(path="top.sv", line=1, column=1),
         message="width differs",

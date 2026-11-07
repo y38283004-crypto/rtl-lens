@@ -35,8 +35,8 @@ Remove the signal if obsolete, or connect and use it where the design intended.
 
 ```systemverilog
 module unused_signal(input logic a, input logic b, output logic y);
-  logic unused_value;
-  assign unused_value = b;
+  logic discarded_value;
+  assign discarded_value = b;
   assign y = a;
 endmodule
 ```

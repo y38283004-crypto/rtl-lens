@@ -33,7 +33,7 @@ def _raw(
 @pytest.mark.parametrize(
     ("code", "canonical_rule"),
     [
-        ("WIDTH", "width-mismatch"),
+        ("WIDTHTRUNC", "width-mismatch"),
         ("LATCH", "incomplete-assignment"),
         ("CASEINCOMPLETE", "case-incomplete"),
         ("CASEOVERLAP", "case-overlap"),
@@ -44,7 +44,6 @@ def _raw(
         ("ALWCOMBORDER", "always-comb-order"),
         ("ALWNEVER", "always-never"),
         ("ASCRANGE", "ascending-range"),
-        ("ASSIGNEQEXPR", "assignment-in-expression"),
     ],
 )
 def test_verilator_mapping_contains_exact_approved_first_batch_pairs(
@@ -56,6 +55,14 @@ def test_verilator_mapping_contains_exact_approved_first_batch_pairs(
 
 def test_engine_rules_equal_the_validated_default_store() -> None:
     assert ENGINE_RULES == KnowledgeStore.load_default().engine_rules
+
+
+@pytest.mark.parametrize("code", ["WIDTH", "ASSIGNEQEXPR"])
+def test_unverified_verilator_codes_remain_visible_as_native_findings(code: str) -> None:
+    finding = canonicalize(_raw("verilator", code))
+
+    assert finding.canonical_rule == f"engine-native:verilator:{code}"
+    assert finding.provenance[0].original_code == code
 
 
 def test_verilator_width_codes_are_not_reassigned_to_port_width() -> None:
@@ -88,15 +95,15 @@ def test_unproven_pyslang_identifier_remains_engine_native_and_distinct() -> Non
 
 
 def test_known_rule_fingerprint_ignores_native_message_wording() -> None:
-    first = canonicalize(_raw("verilator", "WIDTH", message="old wording"))
-    second = canonicalize(_raw("verilator", "WIDTH", message="new wording"))
+    first = canonicalize(_raw("verilator", "WIDTHTRUNC", message="old wording"))
+    second = canonicalize(_raw("verilator", "WIDTHTRUNC", message="new wording"))
 
     assert fingerprint(first) == fingerprint(second)
 
 
 def test_known_rule_fingerprint_includes_symbol() -> None:
-    first = canonicalize(_raw("verilator", "WIDTH", symbol="lhs"))
-    second = canonicalize(_raw("verilator", "WIDTH", symbol="rhs"))
+    first = canonicalize(_raw("verilator", "WIDTHTRUNC", symbol="lhs"))
+    second = canonicalize(_raw("verilator", "WIDTHTRUNC", symbol="rhs"))
 
     assert fingerprint(first) != fingerprint(second)
 
@@ -117,7 +124,7 @@ def test_unknown_rule_fingerprint_distinguishes_long_messages_with_shared_prefix
 
 
 def test_canonicalize_normalizes_repository_relative_posix_path() -> None:
-    raw = _raw("verilator", "WIDTH", path=r"rtl\.\blocks\..\alu.sv")
+    raw = _raw("verilator", "WIDTHTRUNC", path=r"rtl\.\blocks\..\alu.sv")
 
     finding = canonicalize(raw)
 
@@ -129,4 +136,4 @@ def test_canonicalize_normalizes_repository_relative_posix_path() -> None:
 @pytest.mark.parametrize("path", ["../outside.sv", "/outside.sv", "C:/outside.sv"])
 def test_canonicalize_rejects_non_repository_relative_path(path: str) -> None:
     with pytest.raises(ValueError, match="repository-relative"):
-        canonicalize(_raw("verilator", "WIDTH", path=path))
+        canonicalize(_raw("verilator", "WIDTHTRUNC", path=path))

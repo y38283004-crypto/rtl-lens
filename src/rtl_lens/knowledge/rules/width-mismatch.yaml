@@ -26,9 +26,6 @@ engine_mappings:
     code: width-trunc
     verification: local
   - engine: verilator
-    code: WIDTH
-    verification: container
-  - engine: verilator
     code: WIDTHEXPAND
     verification: container
   - engine: verilator

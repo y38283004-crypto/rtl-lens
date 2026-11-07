@@ -18,7 +18,7 @@ This index is generated from the validated bilingual knowledge store. Do not edi
 | [`case-overlap`](case-overlap.md) | `warning` | Case patterns overlap | case 匹配模式发生重叠 |
 | [`case-with-x`](case-with-x.md) | `warning` | Case item contains a literal X value | case 分支项包含字面量 X |
 | [`case-x`](case-x.md) | `warning` | Casex treats X and Z bits as wildcards | casex 将 X 与 Z 位视为通配符 |
-| [`combinational-delay`](combinational-delay.md) | `warning` | Combinational logic contains a procedural delay | 组合逻辑中包含过程延时 |
+| [`combinational-delay`](combinational-delay.md) | `warning` | Combinational logic uses a nonblocking assignment | 组合逻辑中使用了非阻塞赋值 |
 | [`constant-comparison`](constant-comparison.md) | `warning` | Comparison has a constant result | 比较表达式的结果恒定 |
 | [`declaration-filename`](declaration-filename.md) | `info` | Top declaration name does not match its filename | 顶层声明名称与文件名不一致 |
 | [`deprecated-defparam`](deprecated-defparam.md) | `warning` | Parameter is overridden with defparam | 使用 defparam 覆盖参数 |

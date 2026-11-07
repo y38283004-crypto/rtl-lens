@@ -64,7 +64,9 @@ endmodule
 
 ## Native mappings / 原生诊断映射
 
-- `verilator:ASSIGNEQEXPR` — `container` verification
+- No active mapping / 暂无活动映射
+
+The pinned Verilator 5.040 does not implement ASSIGNEQEXPR; this guide has no verified native mapping yet.
 
 ## References / 参考资料
 

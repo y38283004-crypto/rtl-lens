@@ -15,7 +15,5 @@ failing_example: failing/assignment-in-expression.sv
 fixed_example: fixed/assignment-in-expression.sv
 references: [https://verilator.org/guide/latest/warnings.html#assigneqexpr]
 review_status: reviewed
-engine_mappings:
-  - engine: verilator
-    code: ASSIGNEQEXPR
-    verification: container
+engine_mappings: []
+mapping_note: The pinned Verilator 5.040 does not implement ASSIGNEQEXPR; this guide has no verified native mapping yet.
