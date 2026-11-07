@@ -21,7 +21,7 @@ rtl-lens = "rtl_lens.cli:app"
 [dependency-groups]
 dev = [
   "beautifulsoup4>=4.13,<5",
-  "mypy>=1.17,<2",
+  "mypy>=1.17,<3",
   "playwright>=1.54,<2",
   "pytest>=8.4,<9",
   "pytest-cov>=6.2,<7",
