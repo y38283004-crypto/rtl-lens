@@ -27,10 +27,10 @@ def test_project_pins_the_supported_uv_build_line() -> None:
     ignored_paths = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
 
     assert project["build-system"] == {
-        "requires": ["uv_build>=0.12.7,<0.13"],
+        "requires": ["uv_build>=0.13.7,<0.14"],
         "build-backend": "uv_build",
     }
-    assert project["tool"]["uv"]["required-version"] == "==0.12.7"
+    assert project["tool"]["uv"]["required-version"] == ">=0.13.7,<0.14"
     assert (ROOT / "src" / "rtl_lens" / "py.typed").is_file()
     assert "dist/" in ignored_paths
 

@@ -7,7 +7,7 @@ mirror of the same core contract, see [简体中文说明](README.zh-CN.md).
 
 ## Installation
 
-RTL Lens is installed from a source checkout, not from PyPI. Install [uv 0.12.7](https://docs.astral.sh/uv/),
+RTL Lens is installed from a source checkout, not from PyPI. Install [uv 0.13.7](https://docs.astral.sh/uv/),
 then, at the repository root, run:
 
 ```powershell

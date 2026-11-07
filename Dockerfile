@@ -29,7 +29,7 @@ RUN git clone --filter=blob:none --no-checkout https://github.com/verilator/veri
     && test "$(/opt/verilator/bin/verilator --version)" = "Verilator 5.040 2025-08-30 rev v5.040"
 
 FROM ${PYTHON_IMAGE} AS package-build
-ARG UV_VERSION=0.12.7
+ARG UV_VERSION=0.13.7
 WORKDIR /opt/rtl-lens
 COPY LICENSE README.md pyproject.toml uv.lock ./
 COPY src ./src

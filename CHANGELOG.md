@@ -44,3 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Withdraw the unverified `WIDTH` and `ASSIGNEQEXPR` canonical mappings. Those
   codes remain visible as native findings; concrete width expansion/truncation
   mappings remain active. The assignment-expression guide remains available.
+- Move uv and its build backend to the supported 0.13 line so Dependabot can
+  update Python dependencies. CI and container builds pin 0.13.7; the project
+  accepts compatible 0.13 patch releases.
