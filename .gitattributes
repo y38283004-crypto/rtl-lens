@@ -1,2 +1,5 @@
 LICENSE text eol=lf
 docs/rules/*.md text eol=lf
+docs/demo/*.html text eol=lf linguist-generated=true whitespace=-blank-at-eol
+docs/demo/*.json text eol=lf linguist-generated=true
+docs/demo/*.zip binary linguist-generated=true
