@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>RTL Lens scan report</title>
+  <style>:root {
+  color-scheme: light dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  --background: #f4f7fb;
+  --surface: #ffffff;
+  --text: #172033;
+  --muted: #59657a;
+  --border: #d8deea;
+  --accent: #2357d9;
+  --error: #a51d2d;
+  --warning: #7a4b00;
+  --info: #245b91;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--background); }
+body { margin: 0; color: var(--text); background: var(--background); overflow-wrap: anywhere; }
+main { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0 4rem; }
+h1, h2, h3, p { margin-top: 0; }
+h2 { margin-top: 2rem; }
+.page-header, .findings-heading, .engine-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.eyebrow { margin-bottom: .25rem; color: var(--accent); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.project-root, .metadata, .location { color: var(--muted); }
+.state, .engine-state, .finding-meta span { display: inline-block; border: 1px solid currentColor; border-radius: 999px; padding: .2rem .65rem; font-size: .82rem; font-weight: 800; letter-spacing: .04em; }
+.state-complete, .engine-state-completed { color: #17663a; }
+.state-partial, .engine-state-unavailable { color: var(--warning); }
+.state-failed, .engine-state-failed { color: var(--error); }
+section { margin-top: 1.25rem; }
+.summary, .engine-card, .finding-card, .filters, .analysis-panel { border: 1px solid var(--border); border-radius: .9rem; background: var(--surface); box-shadow: 0 5px 18px rgb(23 32 51 / 7%); }
+.summary { padding: 1.25rem; }
+.summary h2 { margin-top: 0; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+.summary-grid div { border-left: 3px solid var(--accent); padding-left: .75rem; }
+.summary-grid strong, .summary-grid span { display: block; }
+.summary-grid span { color: var(--muted); font-size: .88rem; }
+.metadata { margin: 1rem 0 0; }
+.engine-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.engine-card, .finding-card { padding: 1rem; }
+.engine-card h3 { margin-bottom: .35rem; }
+.failure { color: var(--error); }
+.analysis-panel { padding: 1.25rem; }
+.analysis-panel > h2 { margin-top: 0; }
+.warning-panel { border-left: 5px solid var(--warning); }
+.warning-panel > p { color: var(--warning); font-weight: 700; }
+.analysis-list { margin: 0; padding-left: 1.4rem; }
+.analysis-list li + li { margin-top: .5rem; }
+.analysis-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0 0 1rem; }
+.analysis-counts div { border-left: 3px solid var(--accent); padding-left: .75rem; }
+.analysis-counts dt { font-weight: 800; }
+.analysis-counts dd { margin: .25rem 0 0; color: var(--muted); }
+.trend-groups { display: grid; gap: 1rem; }
+.trend-group { margin-top: 0; border-top: 1px solid var(--border); padding-top: .75rem; }
+.trend-group h3 { margin-bottom: .5rem; }
+.relationship-search { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .35rem 1rem; margin: 1rem 0; }
+.relationship-search label { grid-column: 1 / -1; }
+.relationship-search p { margin: 0; color: var(--muted); }
+input[type="search"] { width: 100%; min-height: 2.75rem; border: 1px solid var(--border); border-radius: .45rem; padding: .45rem .65rem; color: var(--text); background: var(--surface); }
+.relationship-table-region { max-width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: .55rem; }
+table { width: 100%; min-width: 42rem; border-collapse: collapse; }
+caption { padding: .75rem; text-align: left; color: var(--muted); font-weight: 700; }
+th, td { border-top: 1px solid var(--border); padding: .65rem .75rem; text-align: left; vertical-align: top; }
+th { background: color-mix(in srgb, var(--surface) 88%, var(--accent)); }
+td code { white-space: normal; overflow-wrap: anywhere; }
+.relationship-state { font-size: .82rem; letter-spacing: .04em; }
+.relationship-state-unresolved { color: var(--error); }
+.relationship-state-resolved { color: #17663a; }
+.empty-state { margin-bottom: 0; color: var(--muted); font-weight: 700; }
+.filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; padding: 1rem; margin-bottom: 1rem; }
+label { display: block; margin-bottom: .3rem; font-weight: 700; }
+select { width: 100%; min-height: 2.75rem; border: 1px solid var(--border); border-radius: .45rem; padding: .45rem .65rem; color: var(--text); background: var(--surface); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.finding-list { display: grid; gap: 1rem; }
+.finding-card { border-left-width: 5px; }
+.severity-error { border-left-color: var(--error); }
+.severity-warning { border-left-color: var(--warning); }
+.severity-info { border-left-color: var(--info); }
+.finding-meta { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; color: var(--muted); }
+.severity-error .severity-label { color: var(--error); }
+.severity-warning .severity-label { color: var(--warning); }
+.severity-info .severity-label { color: var(--info); }
+.explanation-state { font-weight: 700; }
+.explanations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.explanation { margin-top: 0; border-top: 1px solid var(--border); padding-top: .75rem; }
+.explanation h4, .explanation h5 { margin: 0 0 .5rem; }
+.explanation dl { margin: 0; }
+.explanation dt { font-weight: 800; }
+.explanation dd { margin: 0 0 .75rem; }
+details { border-top: 1px solid var(--border); padding-top: .75rem; }
+summary { cursor: pointer; font-weight: 700; }
+.raw-diagnostic { margin-top: .75rem; border-left: 2px solid var(--border); padding-left: .75rem; }
+pre { max-width: 100%; overflow-x: auto; border-radius: .45rem; padding: .75rem; background: #172033; color: #f7f9fc; white-space: pre-wrap; overflow-wrap: anywhere; }
+[hidden] { display: none !important; }
+
+@media (prefers-color-scheme: dark) {
+  :root { --background: #101522; --surface: #171e2d; --text: #edf2fb; --muted: #aeb9ca; --border: #344057; --accent: #8aabff; --error: #ff91a0; --warning: #ffc568; --info: #8bc8ff; }
+  .state-complete, .engine-state-completed { color: #79d9a4; }
+  .relationship-state-resolved { color: #79d9a4; }
+}
+
+@media (max-width: 720px) {
+  main { width: min(100% - 1rem, 1120px); padding-top: 1rem; }
+  .page-header, .findings-heading { align-items: stretch; flex-direction: column; }
+  .summary-grid, .engine-grid, .filters, .explanations, .analysis-counts { grid-template-columns: 1fr; }
+  .relationship-search { grid-template-columns: 1fr; align-items: stretch; }
+  .relationship-search label { grid-column: auto; }
+  .state { align-self: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}</style>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">RTL Lens</p>
+        <h1>Scan report</h1>
+        <p class="project-root">&lt;project&gt;</p>
+      </div>
+      <span class="state state-complete">COMPLETE</span>
+    </header>
+
+    <section class="summary" data-testid="summary" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Summary</h2>
+      <div class="summary-grid">
+        <div><strong>0 findings</strong><span>Total diagnostics</span></div>
+        <div><strong>0 error</strong><span>Blocking severity</span></div>
+        <div><strong>0 warning</strong><span>Review recommended</span></div>
+        <div><strong>0 info</strong><span>Informational</span></div>
+        
+        <div><strong>0 current / uncompared</strong><span>Not compared with a baseline</span></div>
+        
+        <div><strong>Resolution unavailable</strong><span>No baseline configured</span></div>
+        
+      </div>
+      <p class="metadata">
+        1 sources ·
+        1/1 engines completed ·
+        340 ms
+      </p>
+    </section>
+
+    <section data-testid="engine-status" aria-labelledby="engines-heading">
+      <h2 id="engines-heading">Engine status</h2>
+      <div class="engine-grid">
+        
+        <article class="engine-card">
+          <div class="engine-heading">
+            <h3>pyslang</h3>
+            <span class="engine-state engine-state-completed">COMPLETED</span>
+          </div>
+          <p>Version: 11.0.0</p>
+          <p>Duration: 339 ms</p>
+          
+        </article>
+        
+      </div>
+    </section>
+
+    
+
+    <section id="baseline-trends" class="analysis-panel" data-testid="baseline-trends" aria-labelledby="trends-heading">
+      <h2 id="trends-heading">Trend comparison</h2>
+      <p><strong>No baseline configured.</strong> Current findings are not compared with a baseline; resolution cannot be evaluated.</p>
+      <dl class="analysis-counts">
+        
+        <div>
+          <dt>0 CURRENT / UNCOMPARED</dt>
+          <dd>Current findings are not compared with a baseline.</dd>
+        </div>
+        
+        <div>
+          <dt>Resolution unavailable</dt>
+          <dd>No baseline was configured for an absence comparison.</dd>
+        </div>
+        
+      </dl>
+      <div class="trend-groups">
+        
+        
+        
+        
+        
+      </div>
+    </section>
+
+    <section id="module-relationships" class="analysis-panel" data-testid="module-relationships" aria-labelledby="relationships-heading">
+      <h2 id="relationships-heading">Module relationships</h2>
+      <dl class="analysis-counts">
+        <div><dt>2 nodes</dt><dd>Declared or referenced modules.</dd></div>
+        <div><dt>1 relationships</dt><dd>Parent modules instantiating child modules.</dd></div>
+        <div><dt>0 unresolved modules</dt><dd>Referenced names without a matching module definition.</dd></div>
+      </dl>
+      
+      <p>Displaying 1 of 1 relationships. The complete artifact remains available in report data and JSON output.</p>
+      <div class="relationship-search">
+        <label for="relationship-search">Search module relationships</label>
+        <input id="relationship-search" type="search" autocomplete="off" aria-describedby="relationship-visible-count">
+        <p id="relationship-visible-count" data-testid="relationship-visible-count" aria-live="polite">1 relationship visible</p>
+      </div>
+      <div class="relationship-table-region" role="region" aria-labelledby="relationships-table-caption" tabindex="0">
+        <table>
+          <caption id="relationships-table-caption">Module relationships. UNRESOLVED means no matching module definition was found.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Parent module</th>
+              <th scope="col">Instantiated module</th>
+              <th scope="col">Resolution</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr data-testid="relationship-row" data-search="demo_top width_stage">
+              <td><code>demo_top</code></td>
+              <td><code>width_stage</code></td>
+              <td><strong class="relationship-state relationship-state-resolved">RESOLVED</strong></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      
+    </section>
+
+    <section id="findings" aria-labelledby="findings-heading">
+      <div class="findings-heading">
+        <h2 id="findings-heading">Findings</h2>
+        <p data-testid="visible-count" aria-live="polite">0 findings visible</p>
+      </div>
+      <div class="filters" aria-label="Finding filters">
+        <div>
+          <label for="severity-filter">Severity</label>
+          <select id="severity-filter">
+            <option value="all">All severities</option>
+            <option value="error">Error</option>
+            <option value="warning">Warning</option>
+            <option value="info">Info</option>
+          </select>
+        </div>
+        <div>
+          <label for="baseline-filter">Comparison</label>
+          <select id="baseline-filter">
+            <option value="all">All comparison states</option>
+            
+          </select>
+        </div>
+        <div>
+          <label for="engine-filter">Engine</label>
+          <select id="engine-filter">
+            <option value="all">All engines</option>
+            <option value="engine-0">pyslang</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="finding-list" class="finding-list">
+        
+      </div>
+    </section>
+  </main>
+  <script id="report-data" type="application/json">{"analysis_warnings": [], "engine_runs": [{"analysis_warnings": [], "diagnostics": [], "duration_ms": 339, "engine": "pyslang", "failure": null, "module_graph": {"edges": [["demo_top", "width_stage"]], "nodes": ["demo_top", "width_stage"], "unresolved": []}, "state": "completed", "version": "11.0.0"}], "findings": [], "metadata": {"completed_engines": ["pyslang"], "config_digest": "024ad913ee41186231f7caec1f1a2fa3464ba63668735694803c5acdcbd68e22", "duration_ms": 340, "project_root": "\u003cproject\u003e", "redacted": true, "requested_engines": ["pyslang"], "scan_state": "complete", "source_count": 1, "started_at": "2026-11-07T14:55:38.718532Z"}, "module_graph": {"edges": [["demo_top", "width_stage"]], "nodes": ["demo_top", "width_stage"], "unresolved": []}, "resolved_fingerprints": [], "schema_version": "1.0", "trends": {"baseline_configuration_known": true, "baseline_configured": false, "comparison_complete": false, "new": [], "resolved": [], "unchanged": []}}</script>
+  <script>(() => {
+  "use strict";
+
+  const setupFindingFilters = () => {
+    const severity = document.querySelector("#severity-filter");
+    const baseline = document.querySelector("#baseline-filter");
+    const engine = document.querySelector("#engine-filter");
+    const count = document.querySelector("[data-testid='visible-count']");
+    const rows = Array.from(document.querySelectorAll("[data-testid='finding-row']"));
+
+    if (!(severity instanceof HTMLSelectElement) ||
+        !(baseline instanceof HTMLSelectElement) ||
+        !(engine instanceof HTMLSelectElement) ||
+        !(count instanceof HTMLElement)) {
+      return;
+    }
+
+    const applyFilters = () => {
+      let visible = 0;
+      for (const row of rows) {
+        if (!(row instanceof HTMLElement)) continue;
+        let engines = [];
+        try {
+          engines = JSON.parse(row.dataset.engines || "[]");
+        } catch (_error) {
+          engines = [];
+        }
+        const matchesSeverity = severity.value === "all" || row.dataset.severity === severity.value;
+        const matchesBaseline = baseline.value === "all" || row.dataset.baseline === baseline.value;
+        const matchesEngine = engine.selectedIndex === 0 || engines.includes(engine.value);
+        row.hidden = !(matchesSeverity && matchesBaseline && matchesEngine);
+        if (!row.hidden) visible += 1;
+      }
+      count.textContent = `${visible} ${visible === 1 ? "finding" : "findings"} visible`;
+    };
+
+    severity.addEventListener("change", applyFilters);
+    baseline.addEventListener("change", applyFilters);
+    engine.addEventListener("change", applyFilters);
+    applyFilters();
+  };
+
+  const setupRelationshipSearch = () => {
+    const search = document.querySelector("#relationship-search");
+    const count = document.querySelector("[data-testid='relationship-visible-count']");
+    const rows = Array.from(document.querySelectorAll("[data-testid='relationship-row']"));
+
+    if (!(search instanceof HTMLInputElement) || !(count instanceof HTMLElement)) return;
+
+    const foldForSearch = (value) => value.normalize("NFKC").toLowerCase();
+
+    const applySearch = () => {
+      const query = foldForSearch(search.value);
+      let visible = 0;
+      for (const row of rows) {
+        if (!(row instanceof HTMLElement)) continue;
+        const matches = foldForSearch(row.dataset.search || "").includes(query);
+        row.hidden = !matches;
+        if (matches) visible += 1;
+      }
+      count.textContent = `${visible} ${visible === 1 ? "relationship" : "relationships"} visible`;
+    };
+
+    search.addEventListener("input", applySearch);
+    applySearch();
+  };
+
+  setupFindingFilters();
+  setupRelationshipSearch();
+})();</script>
+</body>
+</html>

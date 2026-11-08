@@ -1,0 +1,8 @@
+[scan]
+source_roots = ["failing"]
+top_modules = ["demo_top"]
+language = "en"
+engine_mode = "disabled"
+output_dir = ".rtl-lens/failing"
+redact_sources = true
+fail_on = "warning"

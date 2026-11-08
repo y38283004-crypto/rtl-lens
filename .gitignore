@@ -5,6 +5,7 @@
 .venv/
 dist/
 rtl-lens-reports/
+.rtl-lens/
 __pycache__/
 .pytest_cache/
 .coverage
