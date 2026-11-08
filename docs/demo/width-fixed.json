@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "project_root": "<project>",
+    "started_at": "2026-11-07T14:55:38.718532Z",
+    "duration_ms": 340,
+    "requested_engines": [
+      "pyslang"
+    ],
+    "completed_engines": [
+      "pyslang"
+    ],
+    "config_digest": "024ad913ee41186231f7caec1f1a2fa3464ba63668735694803c5acdcbd68e22",
+    "redacted": true,
+    "scan_state": "complete",
+    "source_count": 1
+  },
+  "findings": [],
+  "engine_runs": [
+    {
+      "engine": "pyslang",
+      "state": "completed",
+      "version": "11.0.0",
+      "diagnostics": [],
+      "failure": null,
+      "duration_ms": 339,
+      "module_graph": {
+        "nodes": [
+          "demo_top",
+          "width_stage"
+        ],
+        "edges": [
+          [
+            "demo_top",
+            "width_stage"
+          ]
+        ],
+        "unresolved": []
+      },
+      "analysis_warnings": []
+    }
+  ],
+  "resolved_fingerprints": [],
+  "module_graph": {
+    "nodes": [
+      "demo_top",
+      "width_stage"
+    ],
+    "edges": [
+      [
+        "demo_top",
+        "width_stage"
+      ]
+    ],
+    "unresolved": []
+  },
+  "trends": {
+    "new": [],
+    "unchanged": [],
+    "resolved": [],
+    "baseline_configured": false,
+    "baseline_configuration_known": true,
+    "comparison_complete": false
+  },
+  "analysis_warnings": []
+}

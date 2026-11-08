@@ -1,22 +1,60 @@
 # RTL Lens
 
+[![CI](https://github.com/y38283004-crypto/rtl-lens/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/y38283004-crypto/rtl-lens/actions/workflows/ci.yml)
+[![Action smoke](https://github.com/y38283004-crypto/rtl-lens/actions/workflows/action-smoke.yml/badge.svg?branch=main)](https://github.com/y38283004-crypto/rtl-lens/actions/workflows/action-smoke.yml)
+
 面向 Verilog 与 SystemVerilog 项目的可解释、离线诊断工具。RTL Lens 仍处于开发中的预发布阶段，
 稳定版发布前其公共接口可能变化。
 英文 README 才是规范源与 source of truth；本文是相同核心契约的简体中文镜像。请同时参阅
 [English README](README.md)。
 
+RTL Lens 将分析器消息整理为包含源文件位置、原生诊断码和已支持规则的双语解释的报告。
+未映射的消息仍会保留；HTML 报告支持诊断筛选和模块关系搜索。
+先用 PySlang 完成便携扫描，安装 Verilator 后可增加第二种诊断视角。
+
+可以先看[可运行示例](examples/width-demo/README.md)，或
+[下载离线报告包](https://github.com/y38283004-crypto/rtl-lens/raw/refs/heads/main/docs/demo/rtl-lens-demo.zip)，
+解压后用浏览器打开 HTML。报告包只包含合成示例生成的脱敏数据。
+
 ## 安装
 
 RTL Lens 从源代码检出安装，未在 PyPI 提供。先安装 [uv 0.13.7](https://docs.astral.sh/uv/)，
-然后在仓库根目录运行：
+然后从准备存放新仓库的目录开始执行：
 
 ```powershell
+git clone https://github.com/y38283004-crypto/rtl-lens.git
+cd rtl-lens
 uv sync --locked --all-groups
 ```
+
+如果已经克隆仓库，直接在其根目录执行 `uv sync --locked --all-groups` 即可。
 
 以下命令均通过 `uv run rtl-lens ...` 执行。支持的本地运行时为 `Python >=3.11,<3.14` 和
 `PySlang >=11,<12`。双引擎使用还需要 `PATH` 中可用的 `Verilator >=5.040`。项目采用
 `Apache-2.0` 许可证。
+
+## 体验示例
+
+在仓库根目录分别运行：
+
+```powershell
+uv run rtl-lens scan examples/width-demo
+uv run rtl-lens scan examples/width-demo --config examples/width-demo/fixed.toml
+```
+
+| 情况 | 当前诊断数 | 退出码 |
+| --- | --- | --- |
+| 隐式将 8 位值赋给 4 位目标 | 1 个位宽告警 | `1`，示例预期的策略拦截 |
+| 显式选择 `sample_i[3:0]` | 0 | `0` |
+
+两次扫描都只需要 PySlang，并展示两个模块间的一条实例化关系。
+此示例的设计意图是保留低四位；真实设计若要保留全部八位，应扩大目标位宽。
+
+打开 `examples/width-demo/.rtl-lens/failing/report.html` 或
+`examples/width-demo/.rtl-lens/fixed/report.html` 查看结果，同目录也有 JSON。
+完整步骤见[示例说明](examples/width-demo/README.md)和[已提交的报告快照](docs/demo/README.md)。
+
+![位宽示例实际生成的脱敏报告](docs/assets/report-preview.png)
 
 ## 快速开始
 
@@ -58,8 +96,6 @@ graph_display_limit = 200
 报告；`required` 会失败。配置优先级为 defaults < `.rtl-lens.toml`/`--config` < 显式 CLI
 `--fail-on`。
 在拥有可比较的既有报告前，请保持 `baseline_path` 为注释示例。
-
-![脱敏报告预览](docs/assets/report-preview.png)
 
 请阅读[入门指南](docs/getting-started.md)、[配置参考](docs/configuration.md)、[架构概览](docs/architecture.md)、
 [隐私指南](docs/privacy.md)、[规则目录](docs/rules/index.md)、[贡献指南](CONTRIBUTING.md)、

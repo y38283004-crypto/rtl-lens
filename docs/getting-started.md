@@ -4,6 +4,11 @@ RTL Lens is a source-checkout, pre-release tool. Install uv 0.13.7 and run
 `uv sync --locked --all-groups` from the repository root. Invoke the installed local command as
 `uv run rtl-lens ...`; it is not a PyPI installation workflow.
 
+For a known input before scanning your own design, follow the
+[width-warning example](../examples/width-demo/README.md). Its first scan returns
+one warning and exit `1`; the explicit fix returns no findings and exit `0`.
+You can also [inspect the redacted report snapshots](demo/README.md).
+
 ## First scan
 
 1. Arrange RTL below `src/`, then run `uv run rtl-lens init .`.

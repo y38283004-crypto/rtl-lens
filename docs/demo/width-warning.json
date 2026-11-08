@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "project_root": "<project>",
+    "started_at": "2026-11-07T14:55:37.703054Z",
+    "duration_ms": 363,
+    "requested_engines": [
+      "pyslang"
+    ],
+    "completed_engines": [
+      "pyslang"
+    ],
+    "config_digest": "92ba3aac5a206f388ed1bfe440bb197fbd95a6788c286a949b746f93b29b3192",
+    "redacted": true,
+    "scan_state": "complete",
+    "source_count": 1
+  },
+  "findings": [
+    {
+      "fingerprint": "541ee43ad7e1ca046ba04cf7c60159012d168ec30160c40cf2dda337ae9abd3b",
+      "canonical_rule": "width-mismatch",
+      "severity": "warning",
+      "location": {
+        "path": "failing/demo_top.sv",
+        "line": 6,
+        "column": 21,
+        "end_line": null,
+        "end_column": null
+      },
+      "title": "Width mismatch",
+      "message": "implicit conversion truncates from 8 to 4 bits",
+      "symbol": null,
+      "source_snippet": null,
+      "explanation_id": "width-mismatch",
+      "baseline_state": "new",
+      "provenance": [
+        {
+          "engine": "pyslang",
+          "engine_version": "11.0.0",
+          "original_code": "width-trunc",
+          "severity": "warning",
+          "location": {
+            "path": "failing/demo_top.sv",
+            "line": 6,
+            "column": 21,
+            "end_line": null,
+            "end_column": null
+          },
+          "message": "implicit conversion truncates from 8 to 4 bits",
+          "symbol": null,
+          "source_snippet": null
+        }
+      ]
+    }
+  ],
+  "engine_runs": [
+    {
+      "engine": "pyslang",
+      "state": "completed",
+      "version": "11.0.0",
+      "diagnostics": [
+        {
+          "engine": "pyslang",
+          "engine_version": "11.0.0",
+          "original_code": "width-trunc",
+          "severity": "warning",
+          "location": {
+            "path": "failing/demo_top.sv",
+            "line": 6,
+            "column": 21,
+            "end_line": null,
+            "end_column": null
+          },
+          "message": "implicit conversion truncates from 8 to 4 bits",
+          "symbol": null,
+          "source_snippet": null
+        }
+      ],
+      "failure": null,
+      "duration_ms": 362,
+      "module_graph": {
+        "nodes": [
+          "demo_top",
+          "width_stage"
+        ],
+        "edges": [
+          [
+            "demo_top",
+            "width_stage"
+          ]
+        ],
+        "unresolved": []
+      },
+      "analysis_warnings": []
+    }
+  ],
+  "resolved_fingerprints": [],
+  "module_graph": {
+    "nodes": [
+      "demo_top",
+      "width_stage"
+    ],
+    "edges": [
+      [
+        "demo_top",
+        "width_stage"
+      ]
+    ],
+    "unresolved": []
+  },
+  "trends": {
+    "new": [
+      "541ee43ad7e1ca046ba04cf7c60159012d168ec30160c40cf2dda337ae9abd3b"
+    ],
+    "unchanged": [],
+    "resolved": [],
+    "baseline_configured": false,
+    "baseline_configuration_known": true,
+    "comparison_complete": false
+  },
+  "analysis_warnings": []
+}

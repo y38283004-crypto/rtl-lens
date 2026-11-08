@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A runnable width-warning example with an explicit fix, real redacted offline
+  report snapshots, a downloadable demo bundle, and a refreshed report preview.
 - Development-time CLI analysis, configuration, dual-engine diagnostics, and
   generated report capabilities currently available in this checkout.
 - Local, pinned PySlang-only compatibility observations for ten public RTL file
