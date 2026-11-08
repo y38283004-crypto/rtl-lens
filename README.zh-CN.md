@@ -19,13 +19,15 @@ RTL Lens 将分析器消息整理为包含源文件位置、原生诊断码和�
 ## 安装
 
 RTL Lens 从源代码检出安装，未在 PyPI 提供。先安装 [uv 0.13.7](https://docs.astral.sh/uv/)，
-然后在仓库根目录运行：
+然后从准备存放新仓库的目录开始执行：
 
 ```powershell
 git clone https://github.com/y38283004-crypto/rtl-lens.git
 cd rtl-lens
 uv sync --locked --all-groups
 ```
+
+如果已经克隆仓库，直接在其根目录执行 `uv sync --locked --all-groups` 即可。
 
 以下命令均通过 `uv run rtl-lens ...` 执行。支持的本地运行时为 `Python >=3.11,<3.14` 和
 `PySlang >=11,<12`。双引擎使用还需要 `PATH` 中可用的 `Verilator >=5.040`。项目采用

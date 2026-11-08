@@ -20,13 +20,15 @@ and open its HTML files in a browser. The bundle contains synthetic, redacted da
 ## Installation
 
 RTL Lens is installed from a source checkout, not from PyPI. Install [uv 0.13.7](https://docs.astral.sh/uv/),
-then, at the repository root, run:
+then start from the directory where you want the new checkout:
 
 ```powershell
 git clone https://github.com/y38283004-crypto/rtl-lens.git
 cd rtl-lens
 uv sync --locked --all-groups
 ```
+
+If you already have a checkout, run only `uv sync --locked --all-groups` from its root.
 
 Use `uv run rtl-lens ...` for every command below. Supported local runtimes are
 `Python >=3.11,<3.14` and `PySlang >=11,<12`. Dual-engine use additionally needs
